@@ -1,8 +1,50 @@
+import styles from './drinks.module.css';
+import container from '@/common/styles/style.module.css';
+import Product1 from '@/components/product1/product1';
 
 function Drinks() {
+    const productData = [
+        {
+            image: 'https://down-bs-vn.img.susercontent.com/vn-11134513-7r98o-lsu96vdwxva168@resize_ss280x175!@crop_w280_h175_cT',
+            productId: 1,
+            title: 'Trà sữa',
+            discount: 20000,
+            cost: 25000,
+            rateAvg: 4.5,
+            orderNum: 150,
+        },
+        {
+            image: 'https://down-bs-vn.img.susercontent.com/vn-11134513-7r98o-lsu96vdwxva168@resize_ss280x175!@crop_w280_h175_cT',
+            productId: 2,
+            title: 'Trà sữa',
+            discount: 20000,
+            cost: 25000,
+            rateAvg: 4.5,
+            orderNum: 150,
+        },
+    ];
+
     return (
-        <div>
-            Drinks
+        <div className={styles['drink-main']}>
+            <div className={container['container']}>
+                <div className={styles['filter']}>
+
+                </div>
+                <div className={styles['food-content']}>
+                    {productData.map((data, index) => (
+                        <Product1
+                            key={index}
+                            image={data.image}
+                            productId={data.productId}
+                            title={data.title}
+                            discount={data.discount}
+                            cost={data.cost}
+                            rateAvg={data.rateAvg}
+                            orderNum={data.orderNum}
+                        />
+                    ))}
+                </div>
+            </div>
         </div>
     );
 }

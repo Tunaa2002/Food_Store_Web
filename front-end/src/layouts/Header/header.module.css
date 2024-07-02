@@ -1,5 +1,11 @@
 .header-main {
     width: 100%;
+    z-index: 10;
+    position: fixed; /* Đặt vị trí cố định */
+    top: 0; /* Đặt ở trên cùng */
+    left: 0; /* Đặt ở bên trái */
+    background-color: white; /* Đặt màu nền để hiển thị rõ ràng */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Thêm đổ bóng để phân biệt với nội dung bên dưới */
 }
 
 .top-header,

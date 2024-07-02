@@ -10,7 +10,7 @@ function HomeContent(){
                 <Slider />
                 <div className={styles['home-content']}>
                     <div className={styles['sale']}>
-
+                        <div></div>
                     </div>
                 </div>
             </div>
