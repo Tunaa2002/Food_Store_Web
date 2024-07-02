@@ -1,0 +1,85 @@
+.banner {
+    display: flex;
+    width: 100%;
+    margin: auto;
+    margin-bottom: 32px;
+    flex-direction: column;
+}
+
+.slider-main {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+}
+
+.poster-main {
+    width: 100%;
+    display: flex;
+}
+
+.slider-container {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+}
+
+.slide {
+    min-width: 100%;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+}
+
+.slide.active {
+    opacity: 1;
+}
+
+.slide-image {
+    width: 100%;
+    height: auto;
+}
+
+.prev, .next {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(0, 0, 0, 0.5);
+    border: none;
+    color: white;
+    font-size: 2rem;
+    cursor: pointer;
+    z-index: 10;
+    padding: 10px;
+}
+
+.prev {
+    left: 10px;
+}
+
+.next {
+    right: 10px;
+}
+
+.poster {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    height: 100%;
+}
+
+.post {
+    padding: 10px 5px 0px 5px;
+}
+
+.post:first-child {
+    padding-left: 0;
+}
+
+.post:last-child {
+    padding-right: 0;
+}
+
+.poster-image {
+    width: 100%;
+    height: auto;
+}

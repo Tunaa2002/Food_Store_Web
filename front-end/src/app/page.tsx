@@ -1,11 +1,12 @@
 
 import styles from "./page.module.css";
+import HomeContent from "@/components/home/home";
 
 function Home() {
   return (
     <div className={styles.main}>
       <div className={styles['container']}>
-        Content
+        <HomeContent />
       </div>
     </div>
   );
