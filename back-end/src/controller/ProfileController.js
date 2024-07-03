@@ -14,6 +14,20 @@ class profileController {
             res.status(500).json({ message: 'Internal server error' });
         }
     }
+
+    async updateProfile(req, res) {
+        try {
+            const username = req.user.username;
+            const updatedData = req.body;
+
+            const result = await ProfileService.updateProfile(username, updatedData);
+
+            res.json({ message: 'Profile updated successfully', data: result });
+        } catch (error) {
+            console.error('Error updating profile:', error);
+            res.status(500).json({ message: 'Internal server error' });
+        }
+    }
 }
 
 const ProfileController = new profileController();

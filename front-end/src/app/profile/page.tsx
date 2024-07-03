@@ -6,27 +6,32 @@ import axios from 'axios';
 
 function Profile() {
     const [user, setUser] = useState({
-        fullname: 'Tuấn Anh',
-        email: 'anh@gmail.com',
-        phone: '0987654321',
-        username: 'Tunaa002',
+        fullname: '',
+        email: '',
+        phone: '',
+        username: '',
         avatar: '/avatar/avatar-default.png'
     });
 
     const [isEditing, setIsEditing] = useState(false);
     const [birthdate, setBirthdate] = useState('');
     const [gender, setGender] = useState('');
-    
+
     useEffect(() => {
         const fetchProfile = async () => {
             try {
-                const token = localStorage.getItem('accessToken');
-                if (!token) {
+                const storedUser = localStorage.getItem('user');
+                if (!storedUser) {
+                    return;
+                }
+                const { accessToken } = JSON.parse(storedUser);
+                if (!accessToken) {
                     return;
                 }
                 const response = await axios.get('http://localhost:5000/profile', {
-                    headers: { Authorization: `Bearer ${token}` }
+                    headers: { Authorization: `Bearer ${accessToken}` }
                 });
+
                 const { fullname, email, phone, username, avatar, birthdate, gender } = response.data;
 
                 setUser({
@@ -36,7 +41,10 @@ function Profile() {
                     username,
                     avatar: avatar || '/avatar/avatar-default.png'
                 });
-                setBirthdate(birthdate || '');
+
+                const formattedBirthdate = birthdate ? new Date(birthdate).toISOString().split('T')[0] : '';
+
+                setBirthdate(formattedBirthdate);
                 setGender(gender || '');
             } catch (error) {
                 console.error('Error fetching profile data:', error);
@@ -46,6 +54,9 @@ function Profile() {
         fetchProfile();
     }, []);
 
+    const handleButtonClick = () => {
+        document.getElementById('avatarInput')?.click();
+    };
 
     const handleAvatarChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files ? event.target.files[0] : null;
@@ -61,7 +72,7 @@ function Profile() {
     const handleBirthdateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setBirthdate(event.target.value);
     };
-    
+
     const handleGenderChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         setGender(event.target.value);
     };
@@ -73,8 +84,28 @@ function Profile() {
 
     const handleEditClick = () => {
         if (isEditing) {
-            // Save changes
-            // Call API to save changes here
+            const updatedData = {
+                ...user,
+                birthdate: new Date(birthdate).toISOString().split('T')[0],
+                gender
+            };
+            const storedUser = localStorage.getItem('user');
+            if (!storedUser) {
+                return;
+            }
+            const { accessToken } = JSON.parse(storedUser);
+            if (!accessToken) {
+                return;
+            }
+            axios.put('http://localhost:5000/update-profile', updatedData, {
+                headers: { Authorization: `Bearer ${accessToken}` }
+            })
+            .then(response => {
+                console.log('Profile updated success');
+            })
+            .catch(error => {
+                console.error('Error updating profile:', error);
+            });
         }
         setIsEditing(!isEditing);
     };
@@ -85,13 +116,21 @@ function Profile() {
                 <div className={styles['avatar']}>
                     <label htmlFor="avatarInput" className={styles['avatar-label']}>
                         <img src={user.avatar} alt="Avatar" />
-                        <input 
-                            type="file" 
-                            id="avatarInput" 
-                            onChange={handleAvatarChange} 
-                            disabled={!isEditing}
+                        <input
+                            type="file"
+                            id="avatarInput"
+                            onChange={handleAvatarChange}
+                            disabled={!isEditing} 
                             className={styles['avatar-input']}
                         />
+                        <button
+                            type="button"
+                            onClick={handleButtonClick}
+                            className={styles['change-avatar-btn']}
+                            disabled={!isEditing}
+                        >
+                            Change Avatar
+                        </button>
                     </label>
                 </div>
                 <div className={styles['profile-info']}>

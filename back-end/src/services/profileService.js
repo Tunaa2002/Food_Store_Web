@@ -16,6 +16,28 @@ class profileService {
             }
         });
     }
+
+    async updateProfile(username, updatedData) {
+        return new Promise(async (resolve, reject) => {
+            const pool = ConnectionDB.getPool();
+            const client = await pool.connect();
+            try {
+                const { fullname, email, phone, avatar, birthdate, gender } = updatedData;
+
+                const query = `
+                    UPDATE Users 
+                    SET fullname = $1, email = $2, phone = $3, avatar = $4, birthdate = $5, gender = $6 
+                    WHERE username = $7
+                    RETURNING *`;
+                const result = await client.query(query, [fullname, email, phone, avatar, birthdate, gender, username]);
+                resolve(result.rows[0]);
+            } catch (error) {
+                reject(error);
+            } finally {
+                client.release();
+            }
+        });
+    }
 }
 
 const ProfileService = new profileService();
