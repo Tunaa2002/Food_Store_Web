@@ -1,7 +1,8 @@
 'use client'
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import styles from './profile.module.css';
+import axios from 'axios';
 
 function Profile() {
     const [user, setUser] = useState({
@@ -15,6 +16,35 @@ function Profile() {
     const [isEditing, setIsEditing] = useState(false);
     const [birthdate, setBirthdate] = useState('');
     const [gender, setGender] = useState('');
+    
+    useEffect(() => {
+        const fetchProfile = async () => {
+            try {
+                const token = localStorage.getItem('accessToken');
+                if (!token) {
+                    return;
+                }
+                const response = await axios.get('http://localhost:5000/profile', {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                const { fullname, email, phone, username, avatar, birthdate, gender } = response.data;
+
+                setUser({
+                    fullname,
+                    email,
+                    phone,
+                    username,
+                    avatar: avatar || '/avatar/avatar-default.png'
+                });
+                setBirthdate(birthdate || '');
+                setGender(gender || '');
+            } catch (error) {
+                console.error('Error fetching profile data:', error);
+            }
+        };
+
+        fetchProfile();
+    }, []);
 
 
     const handleAvatarChange = (event: React.ChangeEvent<HTMLInputElement>) => {
