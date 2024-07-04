@@ -1,3 +1,17 @@
 .food-main {
     margin-top: 186px;
+    margin-bottom: 32px;
+}
+
+.container {
+    display: flex;
+}
+
+.filter {
+    display: inline-block;
+    width: 30%;
+}
+
+.food-content {
+    width: 70%;
 }

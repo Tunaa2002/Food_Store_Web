@@ -1,3 +1,9 @@
 .container {
     padding: 0 64px;
 }
+
+.clear-fix::after {
+    display: block;
+    content: "";
+    clear: both;
+}

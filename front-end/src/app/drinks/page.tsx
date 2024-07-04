@@ -1,34 +1,35 @@
 import styles from './drinks.module.css';
 import container from '@/common/styles/style.module.css';
 import Product1 from '@/components/product1/product1';
+import FilterOption from '@/components/filter-option/filterOption';
 
 function Drinks() {
     const productData = [
         {
             image: 'https://down-bs-vn.img.susercontent.com/vn-11134513-7r98o-lsu96vdwxva168@resize_ss280x175!@crop_w280_h175_cT',
             productId: 1,
-            title: 'Trà sữa',
+            title: 'Trà sữa thái',
             discount: 20000,
             cost: 25000,
             rateAvg: 4.5,
             orderNum: 150,
         },
         {
-            image: 'https://down-bs-vn.img.susercontent.com/vn-11134513-7r98o-lsu96vdwxva168@resize_ss280x175!@crop_w280_h175_cT',
+            image: 'https://down-cvs-vn.img.susercontent.com/vn-11134513-7r98o-lvia2nmph7xg7b@resize_ss280x175!@crop_w280_h175_cT',
             productId: 2,
-            title: 'Trà sữa',
-            discount: 20000,
-            cost: 25000,
-            rateAvg: 4.5,
-            orderNum: 150,
+            title: 'Cheese Coffee',
+            discount: 40000,
+            cost: 45000,
+            rateAvg: 4,
+            orderNum: 120,
         },
     ];
 
     return (
         <div className={styles['drink-main']}>
-            <div className={container['container']}>
+            <div className={`${container['container']} ${styles['container']}`}>
                 <div className={styles['filter']}>
-
+                    <FilterOption />
                 </div>
                 <div className={styles['food-content']}>
                     {productData.map((data, index) => (

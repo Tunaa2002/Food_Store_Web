@@ -1,17 +1,31 @@
 import styles from './product1.module.css';
 import Link from 'next/link';
+import ProductProps from '@/common/interfaces/productProps';
 
-interface ProductProps {
-    productId: number;
-    image: string;
-    title: string;
-    discount: number;
-    cost: number;
-    rateAvg: number;
-    orderNum: number;
-}
 
 const Product1: React.FC<ProductProps> = ({ image, productId, title, discount, cost, rateAvg, orderNum }) => {
+    const renderStars = (rate: number) => {
+        const fullStars = Math.floor(rate);
+        const halfStar = rate % 1 >= 0.1 ? 1 : 0;
+        const emptyStars = 5 - fullStars - halfStar;
+
+        const stars = [];
+
+        for (let i = 0; i < fullStars; i++) {
+            stars.push(<i key={`full-${i}`} className="bi bi-star-fill"></i>);
+        }
+
+        if (halfStar) {
+            stars.push(<i key="half" className="bi bi-star-half"></i>);
+        }
+
+        for (let i = 0; i < emptyStars; i++) {
+            stars.push(<i key={`empty-${i}`} className="bi bi-star"></i>);
+        }
+
+        return stars;
+    };
+    
     return (
         <div className={styles['product']}>
             <div className={styles['product-container']}>
@@ -38,11 +52,7 @@ const Product1: React.FC<ProductProps> = ({ image, productId, title, discount, c
                     </div>
                     <div className={styles['rating']}>
                         <div className={styles['star-icon']}>
-                            <i className="bi bi-star-fill"></i>
-                            <i className="bi bi-star-fill"></i>
-                            <i className="bi bi-star-fill"></i>
-                            <i className="bi bi-star-fill"></i>
-                            <i className="bi bi-star-fill"></i>
+                            {renderStars(rateAvg)}
                         </div>
                         <span className={styles['mr8']}>{rateAvg}</span>
                         <span className={styles['order-num']}>

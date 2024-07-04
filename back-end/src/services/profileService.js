@@ -1,4 +1,6 @@
 import ConnectionDB from '../config/connectionDB.js';
+import { format, addHours } from 'date-fns';
+
 
 class profileService {
     async getProfile(username) {
@@ -8,6 +10,13 @@ class profileService {
             try {
                 const query = 'SELECT fullname, email, phone, username, avatar, birthdate, gender FROM Users WHERE username = $1';
                 const result = await client.query(query, [username]);
+    
+                if (result.rows[0] && result.rows[0].birthdate) {
+                    const { birthdate } = result.rows[0];
+                    const birthdateWithTimezone = addHours(new Date(birthdate), 7);
+                    result.rows[0].birthdate = format(birthdateWithTimezone, 'yyyy-MM-dd');
+                }
+    
                 resolve(result.rows[0]);
             } catch (error) {
                 reject(error);

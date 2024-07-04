@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import styles from './profile.module.css';
-import axios from 'axios';
+import { fetchProfile, updateProfile } from '@/services/profileService';
 
 function Profile() {
     const [user, setUser] = useState({
@@ -18,7 +18,7 @@ function Profile() {
     const [gender, setGender] = useState('');
 
     useEffect(() => {
-        const fetchProfile = async () => {
+        const getUserProfile = async () => {
             try {
                 const storedUser = localStorage.getItem('user');
                 if (!storedUser) {
@@ -28,11 +28,9 @@ function Profile() {
                 if (!accessToken) {
                     return;
                 }
-                const response = await axios.get('http://localhost:5000/profile', {
-                    headers: { Authorization: `Bearer ${accessToken}` }
-                });
 
-                const { fullname, email, phone, username, avatar, birthdate, gender } = response.data;
+                const profileData = await fetchProfile(accessToken);
+                const { fullname, email, phone, username, avatar, birthdate, gender } = profileData;
 
                 setUser({
                     fullname,
@@ -42,16 +40,14 @@ function Profile() {
                     avatar: avatar || '/avatar/avatar-default.png'
                 });
 
-                const formattedBirthdate = birthdate ? new Date(birthdate).toISOString().split('T')[0] : '';
-
-                setBirthdate(formattedBirthdate);
+                setBirthdate(birthdate || '');
                 setGender(gender || '');
             } catch (error) {
                 console.error('Error fetching profile data:', error);
             }
         };
 
-        fetchProfile();
+        getUserProfile();
     }, []);
 
     const handleButtonClick = () => {
@@ -82,30 +78,28 @@ function Profile() {
         setUser({ ...user, [name]: value });
     };
 
-    const handleEditClick = () => {
+    const handleEditClick = async () => {
         if (isEditing) {
-            const updatedData = {
-                ...user,
-                birthdate: new Date(birthdate).toISOString().split('T')[0],
-                gender
-            };
-            const storedUser = localStorage.getItem('user');
-            if (!storedUser) {
-                return;
-            }
-            const { accessToken } = JSON.parse(storedUser);
-            if (!accessToken) {
-                return;
-            }
-            axios.put('http://localhost:5000/update-profile', updatedData, {
-                headers: { Authorization: `Bearer ${accessToken}` }
-            })
-            .then(response => {
-                console.log('Profile updated success');
-            })
-            .catch(error => {
+            try {
+                const updatedData = {
+                    ...user,
+                    birthdate: new Date(birthdate).toISOString().split('T')[0],
+                    gender
+                };
+                const storedUser = localStorage.getItem('user');
+                if (!storedUser) {
+                    return;
+                }
+                const { accessToken } = JSON.parse(storedUser);
+                if (!accessToken) {
+                    return;
+                }
+
+                await updateProfile(accessToken, updatedData);
+                console.log('Profile updated successfully');
+            } catch (error) {
                 console.error('Error updating profile:', error);
-            });
+            }
         }
         setIsEditing(!isEditing);
     };
@@ -129,11 +123,12 @@ function Profile() {
                             className={styles['change-avatar-btn']}
                             disabled={!isEditing}
                         >
-                            Change Avatar
+                            Thay đổi Avatar
                         </button>
                     </label>
                 </div>
-                <div className={styles['profile-info']}>
+                <div className={`${styles['profile-info']} ${styles['clear-fix']}`}>
+                    <label className={styles['label']}>Họ tên</label>
                     <input
                         type="text"
                         name="fullname"
@@ -141,6 +136,7 @@ function Profile() {
                         onChange={handleInputChange}
                         disabled={!isEditing}
                     />
+                    <label className={styles['label']}>Email</label>
                     <input
                         type="email"
                         name="email"
@@ -148,6 +144,7 @@ function Profile() {
                         onChange={handleInputChange}
                         disabled={!isEditing}
                     />
+                    <label className={styles['label']}>Số điện thoại</label>
                     <input
                         type="text"
                         name="phone"
@@ -155,6 +152,7 @@ function Profile() {
                         onChange={handleInputChange}
                         disabled={!isEditing}
                     />
+                    <label className={styles['label']}>Tên người dùng</label>
                     <input
                         type="text"
                         name="username"
@@ -162,6 +160,7 @@ function Profile() {
                         onChange={handleInputChange}
                         disabled={!isEditing}
                     />
+                    <label className={styles['label']}>Ngày sinh</label>
                     <input
                         type="date"
                         name="birthdate"
@@ -169,11 +168,13 @@ function Profile() {
                         onChange={handleBirthdateChange}
                         disabled={!isEditing}
                     />
+                    <label className={styles['label']}>Giới tính:</label>
                     <select
                         name="gender"
                         value={gender}
                         onChange={handleGenderChange}
                         disabled={!isEditing}
+                        className={styles['gender']}
                     >
                         <option value="">Chọn giới tính</option>
                         <option value="male">Nam</option>

@@ -80,17 +80,17 @@ const Header: React.FC = () => {
                                 <i className={`${styles['bi']} ${styles['bi-caret-down-fill']} ${'bi-caret-down-fill'}`}></i>
                                 <ul className={styles['nav-manage']}>
                                     <li className={styles['li']}>
-                                        <Link href="/products-list-manage" className={styles['nav-link']}>
+                                        <Link href="/admin/products-list-manage" className={styles['nav-link']}>
                                             Quản lý danh sách sản phẩm
                                         </Link>
                                     </li>
                                     <li className={styles['li']}>
-                                        <Link href="/products-classify-manage" className={styles['nav-link']}>
+                                        <Link href="/admin/products-classify-manage" className={styles['nav-link']}>
                                             Quản lý phân loại sản phẩm
                                         </Link>
                                     </li>
                                     <li className={styles['li']}>
-                                        <Link href="/orders-manage" className={styles['nav-link']}>
+                                        <Link href="/admin/orders-manage" className={styles['nav-link']}>
                                             Quản lý đơn hàng
                                         </Link>
                                     </li>

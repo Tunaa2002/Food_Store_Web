@@ -1,0 +1,57 @@
+.filter-main {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 20px;
+    width: 100%;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #fff;
+}
+
+.filter-container {
+    width: 100%;
+}
+
+.filter-section {
+    margin-bottom: 20px;
+}
+
+.filter-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.filter-item label {
+    margin-left: 5px;
+}
+
+.price-range {
+    /* display: flex; */
+    align-items: center;
+    justify-content: space-between;
+    margin: 10px 0;
+}
+
+.price-range span {
+    margin: 0 10px;
+}
+
+.price-input {
+    width: 80px;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.send-btn {
+    padding: 8px;
+    background-color: #588fe2;
+    border: none;
+    color: #fff;
+}
+
+.send-btn:hover {
+    background-color: #0D6EFD;
+}

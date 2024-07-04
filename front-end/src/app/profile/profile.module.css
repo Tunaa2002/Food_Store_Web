@@ -1,8 +1,15 @@
+.clear-fix::after {
+    display: block;
+    content: "";
+    clear: both;
+}
+
 .profile-main {
     display: flex;
     justify-content: center;
     align-items: center;
     margin-top: 186px;
+    margin-bottom: 32px;
 }
 
 .profile-container {
@@ -37,6 +44,7 @@
 }
 
 .change-avatar-btn {
+    display: none;
     position: absolute;
     top: 0;
     left: 0;
@@ -48,14 +56,26 @@
     z-index: 1;
 }
 
+.avatar:hover .change-avatar-btn {
+    display: block;
+}
+
 .profile-info {
     margin-bottom: 20px;
+}
+
+.profile-info .label {
+    float: left;
+    font-weight: 600;
+    font-size: 14px;
+    /* margin-top: 8px; */
 }
 
 .profile-info input {
     width: 100%;
     padding: 8px;
-    margin: 5px 0;
+    margin-top: 5px;
+    margin-bottom: 10px;
     border: 1px solid #ddd;
     border-radius: 5px;
     box-sizing: border-box;
@@ -79,4 +99,9 @@
 
 .edit-profile-btn:hover {
     background-color: #0056b3;
+}
+
+.gender {
+    float: left;
+    margin-left: 16px;
 }
