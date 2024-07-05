@@ -85,7 +85,7 @@ const Header: React.FC = () => {
                                         </Link>
                                     </li>
                                     <li className={styles['li']}>
-                                        <Link href="/admin/products-classify-manage" className={styles['nav-link']}>
+                                        <Link href="/admin/categories-manage" className={styles['nav-link']}>
                                             Quản lý phân loại sản phẩm
                                         </Link>
                                     </li>
