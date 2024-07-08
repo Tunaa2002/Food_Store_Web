@@ -32,7 +32,7 @@ function Footer() {
                 </div>
                 <div className={styles['menu_vertical']}>
                     <h4 className={styles['title']}>
-                        <Link href="/" className={styles['nav-link']}>Foods</Link>
+                        <Link href="/" className={styles['nav-link']}>Đồ ăn</Link>
                     </h4>
                     <div className={styles['category']}>
                         <ul>
@@ -44,7 +44,7 @@ function Footer() {
                 </div>
                 <div className={styles['menu_vertical']}>
                     <h4 className={styles['title']}>
-                        <Link href="/" className={styles['nav-link']}>Drinks</Link>
+                        <Link href="/" className={styles['nav-link']}>Đồ uống</Link>
                     </h4>
                     <div className={styles['category']}>
                         <ul>

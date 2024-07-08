@@ -50,7 +50,7 @@ class accountService {
                         process.env.ACCESS_TOKEN_SECRET,
                         { expiresIn: '8h' }
                     )
-                    resolve({ username: user.username, role: user.role, accessToken });
+                    resolve({ accessToken });
                 } else {
                     resolve(null);
                 }

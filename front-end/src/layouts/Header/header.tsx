@@ -1,9 +1,12 @@
-'use client'
+// Header.tsx
+
+'use client';
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import styles from "./header.module.css";
 import 'bootstrap-icons/font/bootstrap-icons.css';
+import jwtDecode from 'jsonwebtoken'; // Import thư viện để giải mã JWT
 
 const Header: React.FC = () => {
     const [username, setUsername] = useState<string | null>(null);
@@ -11,17 +14,31 @@ const Header: React.FC = () => {
     const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
     useEffect(() => {
-        const user = localStorage.getItem('user');
-        if (user) {
-            const { username, role, expiry } = JSON.parse(user);
-            if (new Date().getTime() < expiry) {
-                setUsername(username);
-                setRole(role);
-                setIsLoggedIn(true);
-            } else {
-                localStorage.removeItem('user');
+        const checkUser = () => {
+            const storedUser = localStorage.getItem('user');
+            if (storedUser) {
+                try {
+                    const { accessToken, expiry } = JSON.parse(storedUser);
+                    
+                    const decodedToken: any = jwtDecode.decode(accessToken);
+                    const { username, role } = decodedToken;
+
+                    // Check token expiration
+                    if (new Date().getTime() < expiry) {
+                        setUsername(username);
+                        setRole(role);
+                        setIsLoggedIn(true);
+                    } else {
+                        localStorage.removeItem('user');
+                    }
+                } catch (error:any) {
+                    console.error('Error decoding JWT token:', error.message);
+                    localStorage.removeItem('user');
+                }
             }
-        }
+        };
+
+        checkUser();
     }, []);
 
     const handleSignOut = () => {
@@ -55,7 +72,7 @@ const Header: React.FC = () => {
                         </Link>
                         <Link href="/cart" className={styles['nav-link']}>
                             <i className={`${styles['bi']} ${styles['bi-cart4']} ${'bi-cart4'}`}>
-                                <span className={styles['cart-count']}>1</span>
+                                <span className={styles['cart-count']}>0</span>
                             </i>
                             <p className={styles['actions-text']}>Giỏ hàng</p>
                         </Link>
@@ -80,17 +97,17 @@ const Header: React.FC = () => {
                                 <i className={`${styles['bi']} ${styles['bi-caret-down-fill']} ${'bi-caret-down-fill'}`}></i>
                                 <ul className={styles['nav-manage']}>
                                     <li className={styles['li']}>
-                                        <Link href="/admin/products-list-manage" className={styles['nav-link']}>
+                                        <Link href="/private/products-list-manage" className={styles['nav-link']}>
                                             Quản lý danh sách sản phẩm
                                         </Link>
                                     </li>
                                     <li className={styles['li']}>
-                                        <Link href="/admin/categories-manage" className={styles['nav-link']}>
+                                        <Link href="/private/categories-manage" className={styles['nav-link']}>
                                             Quản lý phân loại sản phẩm
                                         </Link>
                                     </li>
                                     <li className={styles['li']}>
-                                        <Link href="/admin/orders-manage" className={styles['nav-link']}>
+                                        <Link href="/private/orders-manage" className={styles['nav-link']}>
                                             Quản lý đơn hàng
                                         </Link>
                                     </li>

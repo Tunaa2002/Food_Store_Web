@@ -15,7 +15,7 @@ function Foods() {
             orderNum: 150,
         },
         {
-            image: '"https://down-bs-vn.img.susercontent.com/vn-11134513-7r98o-lsv7jl8ilrix5f@resize_ss280x175!@crop_w280_h175_cT"',
+            image: 'https://down-bs-vn.img.susercontent.com/vn-11134513-7r98o-lsv7jl8ilrix5f@resize_ss280x175!@crop_w280_h175_cT',
             productId: 2,
             title: 'Bánh mì thập cẩm',
             discount: 30000,

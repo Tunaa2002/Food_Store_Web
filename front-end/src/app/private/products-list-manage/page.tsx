@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import styles from './productsListManage.module.css';
 import FilterOption from '@/components/filter-option/filterOption';
+import PrivateLayout from '../layout';
 
 const products = [
     {

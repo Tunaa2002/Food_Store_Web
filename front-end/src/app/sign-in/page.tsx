@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import axios from 'axios';
-import styles from './sign-in.module.css'
+import styles from './sign-in.module.css';
 
 function SignIn() {
     const [formData, setFormData] = useState({
@@ -37,11 +37,10 @@ function SignIn() {
               password
             });
       
-            const { role, accessToken } = response.data;
-            console.log(`Đăng nhập thành công với vai trò: ${role}`);
+            const { accessToken } = response.data;
       
-            const expiry = new Date().getTime() + 8 * 60 * 60 * 1000; // 8 giờ
-            localStorage.setItem('user', JSON.stringify({ accessToken, username, role, expiry }));
+            const expiry = new Date().getTime() + 8 * 60 * 60 * 1000; 
+            localStorage.setItem('user', JSON.stringify({ accessToken, expiry }));
             window.location.href = '/';
           } catch (error: any) {
             if (error.response && error.response.status === 401) {
@@ -52,11 +51,8 @@ function SignIn() {
             }
           }
     };
-
     const { username, password } = formData;
-
     const isFormFilled = username && password;
-
     return (
         <div className={styles['sign-in-form']}>
             <div className={styles['sign-in-container']}>
