@@ -25,11 +25,23 @@ function Drinks() {
         },
     ];
 
+    const categoriesList = [
+        'Nước ngọt',
+        'Nước trái cây',
+        'Sữa',
+        'Trà sữa',
+        'Đồ uống có cồn',
+        'Nước khoáng',
+        'Cà phê'
+    ];
+
     return (
         <div className={styles['drink-main']}>
             <div className={`${container['container']} ${styles['container']}`}>
                 <div className={styles['filter']}>
-                    <FilterOption />
+                    <FilterOption 
+                        categories={categoriesList}
+                    />
                 </div>
                 <div className={styles['food-content']}>
                     {productData.map((data, index) => (

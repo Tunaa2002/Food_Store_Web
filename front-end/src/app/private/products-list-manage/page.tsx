@@ -3,7 +3,6 @@
 import React, { useState } from 'react';
 import styles from './productsListManage.module.css';
 import FilterOption from '@/components/filter-option/filterOption';
-import PrivateLayout from '../layout';
 
 const products = [
     {
@@ -117,6 +116,21 @@ const products = [
     
 ];
 
+const categoriesList = [
+    'Đồ ăn nhanh',
+    'Đồ ăn vặt',
+    'Đồ ăn nhẹ',
+    'Đồ ăn chính',
+    'Đồ ăn chay',
+    'Nước ngọt',
+    'Nước trái cây',
+    'Sữa',
+    'Trà sữa',
+    'Đồ uống có cồn',
+    'Nước khoáng',
+    'Cà phê'
+];
+
 function ProductsListManage() {
     const [currentPage, setCurrentPage] = useState(1);
     const productsPerPage = 10;
@@ -146,7 +160,9 @@ function ProductsListManage() {
                 </div>
                 <div className={styles['products-list']}>
                     <div className={styles['filter']}>
-                        <FilterOption />
+                        <FilterOption 
+                            categories={categoriesList}
+                        />
                     </div>
                     <table className={styles['products-table']}>
                         <thead>

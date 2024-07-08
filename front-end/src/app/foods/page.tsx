@@ -25,12 +25,20 @@ function Foods() {
         },
     ];
 
+    const categoriesList = [
+        'Đồ ăn nhanh',
+        'Đồ ăn vặt',
+        'Đồ ăn nhẹ',
+        'Đồ ăn chính',
+        'Đồ ăn chay',
+    ];
+
     return (
         <div className={styles['food-main']}>
             <div className={`${container['container']} ${styles['container']} ${container['clear-fix']}`}>
                 <div className={styles['filter']}>
                     <FilterOption 
-
+                        categories={categoriesList}
                     />
                 </div>
                 <div className={styles['food-content']}>

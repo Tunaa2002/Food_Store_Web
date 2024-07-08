@@ -3,24 +3,9 @@
 import React, { useState } from 'react';
 import styles from './filterOption.module.css';
 import Slider from '@mui/material/Slider';
-// import Categories from '@/common/interfaces/categories';
+import FilterOptionProps from '@/common/interfaces/filterOption';
 
-const categories = [
-    'Đồ ăn nhanh',
-    'Đồ ăn vặt',
-    'Đồ ăn nhẹ',
-    'Đồ ăn chính',
-    'Đồ ăn chay',
-    'Nước ngọt',
-    'Nước trái cây',
-    'Sữa',
-    'Trà sữa',
-    'Đồ uống có cồn',
-    'Nước khoáng',
-    'Cà phê'
-];
-
-function FilterOption() {
+const FilterOption: React.FC<FilterOptionProps> = ({ categories }) => {
     const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
     const [priceRange, setPriceRange] = useState<number[]>([0, 1000000]);
     const [minPrice, setMinPrice] = useState<string>('0');
@@ -55,7 +40,6 @@ function FilterOption() {
     };
 
     const handleFilterApply = () => {
-        // Apply filter logic here
         console.log('Selected Categories:', selectedCategories);
         console.log('Price Range:', priceRange);
     };
