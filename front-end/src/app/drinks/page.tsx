@@ -7,7 +7,7 @@ function Drinks() {
     const productData = [
         {
             image: 'https://down-bs-vn.img.susercontent.com/vn-11134513-7r98o-lsu96vdwxva168@resize_ss280x175!@crop_w280_h175_cT',
-            productId: 1,
+            productId: 6,
             title: 'Trà sữa thái',
             discount: 20000,
             cost: 25000,
@@ -16,7 +16,7 @@ function Drinks() {
         },
         {
             image: 'https://down-cvs-vn.img.susercontent.com/vn-11134513-7r98o-lvia2nmph7xg7b@resize_ss280x175!@crop_w280_h175_cT',
-            productId: 2,
+            productId: 8,
             title: 'Cheese Coffee',
             discount: 40000,
             cost: 45000,
@@ -46,7 +46,7 @@ function Drinks() {
                 <div className={styles['food-content']}>
                     {productData.map((data, index) => (
                         <Product1
-                            key={index}
+                            key={data.productId}
                             image={data.image}
                             productId={data.productId}
                             title={data.title}

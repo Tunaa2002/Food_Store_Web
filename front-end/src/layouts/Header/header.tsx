@@ -1,17 +1,16 @@
-// Header.tsx
-
 'use client';
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import styles from "./header.module.css";
 import 'bootstrap-icons/font/bootstrap-icons.css';
-import jwtDecode from 'jsonwebtoken'; // Import thư viện để giải mã JWT
+import jwtDecode from 'jsonwebtoken';
 
 const Header: React.FC = () => {
     const [username, setUsername] = useState<string | null>(null);
     const [role, setRole] = useState<string | null>(null);
     const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+    const [cartCount, setCartCount] = useState<number>(0);
 
     useEffect(() => {
         const checkUser = () => {
@@ -37,8 +36,19 @@ const Header: React.FC = () => {
                 }
             }
         };
-
         checkUser();
+
+        // Đếm sản phẩm trong giỏ hàng
+        const updateCartCount = () => {
+            const cartItems = JSON.parse(localStorage.getItem('cart') || '[]');
+            setCartCount(cartItems.length);
+        };
+        updateCartCount();
+        window.addEventListener('storage', updateCartCount);
+        return () => {
+            window.removeEventListener('storage', updateCartCount);
+        };
+
     }, []);
 
     const handleSignOut = () => {
@@ -72,7 +82,7 @@ const Header: React.FC = () => {
                         </Link>
                         <Link href="/cart" className={styles['nav-link']}>
                             <i className={`${styles['bi']} ${styles['bi-cart4']} ${'bi-cart4'}`}>
-                                <span className={styles['cart-count']}>0</span>
+                                <span className={styles['cart-count']}>{cartCount}</span>
                             </i>
                             <p className={styles['actions-text']}>Giỏ hàng</p>
                         </Link>

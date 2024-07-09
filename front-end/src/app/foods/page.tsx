@@ -44,7 +44,7 @@ function Foods() {
                 <div className={styles['food-content']}>
                     {productData.map((data, index) => (
                         <Product1
-                            key={index}
+                            key={data.productId}
                             image={data.image}
                             productId={data.productId}
                             title={data.title}

@@ -1,6 +1,9 @@
+'use client'
+
 import styles from './product1.module.css';
 import Link from 'next/link';
 import ProductProps from '@/common/interfaces/productProps';
+import axios from 'axios';
 
 
 const Product1: React.FC<ProductProps> = ({ image, productId, title, discount, cost, rateAvg, orderNum }) => {
@@ -24,6 +27,33 @@ const Product1: React.FC<ProductProps> = ({ image, productId, title, discount, c
         }
 
         return stars;
+    };
+
+    const handleOrderClick = async () => {
+        let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        const productIndex = cart.findIndex((item: any) => item.productId === productId);
+
+        if (productIndex !== -1) {
+            cart[productIndex].quantity += 1;
+        } else {
+            cart.push({ image, productId, title, discount, cost, rateAvg, orderNum, quantity: 1 });
+        }
+
+        localStorage.setItem('cart', JSON.stringify(cart));
+
+        
+        window.dispatchEvent(new Event('storage'));
+
+        const token = localStorage.getItem('token');
+        if (token) {
+            try {
+                await axios.post('/api/cart', { cartItem: { productId, quantity: cart[productIndex]?.quantity || 1 } }, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+            } catch (error) {
+                console.error('Failed to update cart in database', error);
+            }
+        }
     };
     
     return (
@@ -61,7 +91,7 @@ const Product1: React.FC<ProductProps> = ({ image, productId, title, discount, c
                     </div>
                     <Link href='/xem-chi-tiet'>Xem chi tiết</Link>
                     <i className={`${styles['bi']} ${styles['bi-heart-fill']} bi-heart-fill`}></i>
-                    <button className={styles['order-btn']}>Đặt hàng</button>
+                    <button className={styles['order-btn']} onClick={handleOrderClick}>Đặt hàng</button>
                 </div>
             </div>
         </div>

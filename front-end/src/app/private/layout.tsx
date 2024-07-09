@@ -1,13 +1,10 @@
-// PrivateLayout.tsx
 'use client';
 
-import { useEffect, ReactNode } from 'react';
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import jwtDecode from 'jsonwebtoken';
+import PrivateLayoutProps from '@/common/interfaces/privateLayout';
 
-interface PrivateLayoutProps {
-    children: ReactNode;
-}
 
 export default function PrivateLayout({ children }: PrivateLayoutProps ) {
     const router = useRouter();
