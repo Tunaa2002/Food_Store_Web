@@ -1,63 +1,15 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, {useEffect} from 'react';
 import Link from 'next/link';
 import styles from "./header.module.css";
 import 'bootstrap-icons/font/bootstrap-icons.css';
-import jwtDecode from 'jsonwebtoken';
+import { useUser } from '@/common/contexts/userContext';
+import { useCart } from '@/common/contexts/cartContext';
 
 const Header: React.FC = () => {
-    const [username, setUsername] = useState<string | null>(null);
-    const [role, setRole] = useState<string | null>(null);
-    const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
-    const [cartCount, setCartCount] = useState<number>(0);
-
-    useEffect(() => {
-        const checkUser = () => {
-            const storedUser = localStorage.getItem('user');
-            if (storedUser) {
-                try {
-                    const { accessToken, expiry } = JSON.parse(storedUser);
-                    
-                    const decodedToken: any = jwtDecode.decode(accessToken);
-                    const { username, role } = decodedToken;
-
-                    // Check token expiration
-                    if (new Date().getTime() < expiry) {
-                        setUsername(username);
-                        setRole(role);
-                        setIsLoggedIn(true);
-                    } else {
-                        localStorage.removeItem('user');
-                    }
-                } catch (error:any) {
-                    console.error('Error decoding JWT token:', error.message);
-                    localStorage.removeItem('user');
-                }
-            }
-        };
-        checkUser();
-
-        // Đếm sản phẩm trong giỏ hàng
-        const updateCartCount = () => {
-            const cartItems = JSON.parse(localStorage.getItem('cart') || '[]');
-            setCartCount(cartItems.length);
-        };
-        updateCartCount();
-        window.addEventListener('storage', updateCartCount);
-        return () => {
-            window.removeEventListener('storage', updateCartCount);
-        };
-
-    }, []);
-
-    const handleSignOut = () => {
-        localStorage.removeItem('user');
-        setUsername(null);
-        setRole(null);
-        setIsLoggedIn(false);
-        window.location.href = '/';
-    };
+    const { username, role, isLoggedIn, signOut } = useUser();
+    const { cartCount } = useCart();
 
     return (
         <div className={`${styles['header-main']}`}>
@@ -127,7 +79,7 @@ const Header: React.FC = () => {
                     </div>
                     <div className={styles['header-account']}>
                         {isLoggedIn ? (
-                            <Link href="/" className={styles['nav-link']} onClick={handleSignOut}>
+                            <Link href="/" className={styles['nav-link']} onClick={signOut}>
                                 Đăng xuất
                             </Link>
                         ) : (

@@ -1,0 +1,101 @@
+.mr8 {
+    margin-right: 8px;
+}
+
+.product-detail {
+    margin-top: 186px;
+}
+
+.container {
+    padding: 0 64px;
+}
+
+.product-container {
+    display: flex;
+    position: relative;
+    padding: 10px;
+    border: 1px solid #ccc;
+}
+
+.product-image {
+    width: 30%;
+
+}
+
+.product-image .img {
+    width: 100%;
+    height: auto;
+}
+
+.product-info {
+    width: 70%;
+    margin-left: 16px;
+}
+
+.product-info .title {
+    margin-bottom: 8px;
+}
+
+.product-info .h2 {
+    margin: 0;
+    font-size: 18px;
+}
+
+.user-rating .title {
+    margin-top: 32px;
+    margin-bottom: 8px;
+}
+
+.price {
+    margin-bottom: 6px;
+}
+
+.discount {
+    font-weight: 700;
+}
+
+.cost {
+    text-decoration: line-through;
+    color: #8B96A5;
+}
+
+.rating {
+    color: #FF9017;
+    margin-bottom: 6px;
+}
+
+.order-num {
+    color: #ccc;
+}
+
+.star-icon {
+    display: inline-block;
+    margin-right: 6px;
+}
+
+.bi-heart-fill {
+    display: block;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 6px;
+    color: #588fe2;
+}
+
+.bi-heart-fill:hover {
+    color: #0D6EFD;
+}
+
+.order-btn {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    padding: 6px 10px;
+    border: none;
+    background-color: #588fe2;
+    color: #fff;
+}
+
+.order-btn:hover {
+    background-color: #0D6EFD;
+}

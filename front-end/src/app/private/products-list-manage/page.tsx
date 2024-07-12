@@ -1,137 +1,33 @@
 'use client'
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './productsListManage.module.css';
 import FilterOption from '@/components/filter-option/filterOption';
+import Category from '@/common/interfaces/categories';
+import { filterByCategories } from '@/common/utils/categoriesFilter';
+import { filterByPriceRange } from '@/common/utils/priceFilter';
+import ProductProps from '@/common/interfaces/productProps';
+import axios from 'axios';
 
-const products = [
-    {
-        id: 1,
-        image: 'https://down-bs-vn.img.susercontent.com/vn-11134513-7r98o-lsu96vdwxva168@resize_ss280x175!@crop_w280_h175_cT',
-        name: 'Trà sữa thái',
-        cost: 25000,
-        discount: 20000,
-        category: 'Trà sữa',
-        quantity: 20
-    },
-    {
-        id: 2,
-        image: 'https://down-cvs-vn.img.susercontent.com/vn-11134513-7r98o-lvia2nmph7xg7b@resize_ss280x175!@crop_w280_h175_cT',
-        name: 'Cheese Coffee',
-        cost: 45000,
-        discount: 40000,
-        category: 'Cà phê',
-        quantity: 15
-    },
-    {
-        id: 3,
-        image: 'https://down-tx-vn.img.susercontent.com/vn-11134513-7r98o-lstqa2yq1qys29@resize_ss280x175!@crop_w280_h175_cT',
-        name: 'Cơm gà xối mỡ',
-        cost: 40000,
-        discount: 35000,
-        category: 'Đồ ăn chính',
-        quantity: 10
-    },
-    {
-        id: 4,
-        image: 'https://down-bs-vn.img.susercontent.com/vn-11134513-7r98o-lsv7jl8ilrix5f@resize_ss280x175!@crop_w280_h175_cT',
-        name: 'Bánh mì thập cẩm',
-        cost: 35000,
-        discount: 30000,
-        category: 'Đồ ăn nhanh',
-        quantity: 15
-    },
-    {
-        id: 5,
-        image: 'https://down-bs-vn.img.susercontent.com/vn-11134513-7r98o-lsu96vdwxva168@resize_ss280x175!@crop_w280_h175_cT',
-        name: 'Trà sữa thái',
-        cost: 25000,
-        discount: 20000,
-        category: 'Trà sữa',
-        quantity: 20
-    },
-    {
-        id: 6,
-        image: 'https://down-cvs-vn.img.susercontent.com/vn-11134513-7r98o-lvia2nmph7xg7b@resize_ss280x175!@crop_w280_h175_cT',
-        name: 'Cheese Coffee',
-        cost: 45000,
-        discount: 40000,
-        category: 'Cà phê',
-        quantity: 15
-    },
-    {
-        id: 7,
-        image: 'https://down-tx-vn.img.susercontent.com/vn-11134513-7r98o-lstqa2yq1qys29@resize_ss280x175!@crop_w280_h175_cT',
-        name: 'Cơm gà xối mỡ',
-        cost: 40000,
-        discount: 35000,
-        category: 'Đồ ăn chính',
-        quantity: 10
-    },
-    {
-        id: 8,
-        image: 'https://down-bs-vn.img.susercontent.com/vn-11134513-7r98o-lsv7jl8ilrix5f@resize_ss280x175!@crop_w280_h175_cT',
-        name: 'Bánh mì thập cẩm',
-        cost: 35000,
-        discount: 30000,
-        category: 'Đồ ăn nhanh',
-        quantity: 15
-    },
-    {
-        id: 9,
-        image: 'https://down-bs-vn.img.susercontent.com/vn-11134513-7r98o-lsu96vdwxva168@resize_ss280x175!@crop_w280_h175_cT',
-        name: 'Trà sữa thái',
-        cost: 25000,
-        discount: 20000,
-        category: 'Trà sữa',
-        quantity: 20
-    },
-    {
-        id: 10,
-        image: 'https://down-cvs-vn.img.susercontent.com/vn-11134513-7r98o-lvia2nmph7xg7b@resize_ss280x175!@crop_w280_h175_cT',
-        name: 'Cheese Coffee',
-        cost: 45000,
-        discount: 40000,
-        category: 'Cà phê',
-        quantity: 15
-    },
-    {
-        id: 11,
-        image: 'https://down-tx-vn.img.susercontent.com/vn-11134513-7r98o-lstqa2yq1qys29@resize_ss280x175!@crop_w280_h175_cT',
-        name: 'Cơm gà xối mỡ',
-        cost: 40000,
-        discount: 35000,
-        category: 'Đồ ăn chính',
-        quantity: 10
-    },
-    {
-        id: 12,
-        image: 'https://down-bs-vn.img.susercontent.com/vn-11134513-7r98o-lsv7jl8ilrix5f@resize_ss280x175!@crop_w280_h175_cT',
-        name: 'Bánh mì thập cẩm',
-        cost: 35000,
-        discount: 30000,
-        category: 'Đồ ăn nhanh',
-        quantity: 15
-    },
-    
+const categoriesList: Category[] = [
+    {categoryId: 'F01', name: 'Đồ ăn nhanh'},
+    {categoryId: 'F02', name: 'Đồ ăn vặt'},
+    {categoryId: 'F03', name: 'Đồ ăn nhẹ'},
+    {categoryId: 'F04', name: 'Đồ ăn chính'},
+    {categoryId: 'F05', name: 'Đồ ăn chay'},
+    { categoryId: 'D01', name: 'Nước ngọt' },
+    { categoryId: 'D02', name: 'Nước trái cây' },
+    { categoryId: 'D03', name: 'Sữa' },
+    { categoryId: 'D04', name: 'Trà sữa' },
+    { categoryId: 'D05', name: 'Đồ uống có cồn' },
+    { categoryId: 'D06', name: 'Nước khoáng' },
+    { categoryId: 'D07', name: 'Cà phê' }
 ];
 
-const categoriesList = [
-    'Đồ ăn nhanh',
-    'Đồ ăn vặt',
-    'Đồ ăn nhẹ',
-    'Đồ ăn chính',
-    'Đồ ăn chay',
-    'Nước ngọt',
-    'Nước trái cây',
-    'Sữa',
-    'Trà sữa',
-    'Đồ uống có cồn',
-    'Nước khoáng',
-    'Cà phê'
-];
-
-function ProductsListManage() {
+const ProductsListManage: React.FC = () => {
+    const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+    const [priceRange, setPriceRange] = useState<number[]>([0, 1000000]);
+    const [filteredProductData, setFilteredProductData] = useState<ProductProps[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
     const productsPerPage = 10;
 
@@ -139,11 +35,34 @@ function ProductsListManage() {
         setCurrentPage(pageNumber);
     };
 
+    useEffect(() => {
+        fetchData();
+    }, [selectedCategories, priceRange]);
+
+    const fetchData = async () => {
+        try {
+            const response = await axios.get<ProductProps[]>('http://localhost:5000/products-list');
+            let filteredProducts = response.data;
+            filteredProducts = filterByCategories(filteredProducts, selectedCategories);
+            filteredProducts = filterByPriceRange(filteredProducts, priceRange);
+            setFilteredProductData(filteredProducts);
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    };
+
+    const totalPages = Math.ceil(filteredProductData.length / productsPerPage);
     const indexOfLastProduct = currentPage * productsPerPage;
     const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
-    const currentProducts = products.slice(indexOfFirstProduct, indexOfLastProduct);
+    const currentProducts = filteredProductData.slice(indexOfFirstProduct, indexOfLastProduct);
 
-    const totalPages = Math.ceil(products.length / productsPerPage);
+    const handleCategoryChange = (selectedCategories: string[]) => {
+        setSelectedCategories(selectedCategories);
+    };
+
+    const handlePriceChange = (priceRange: number[]) => {
+        setPriceRange(priceRange);
+    };
 
     return (
         <div className={styles['products-manage']}>
@@ -160,8 +79,10 @@ function ProductsListManage() {
                 </div>
                 <div className={styles['products-list']}>
                     <div className={styles['filter']}>
-                        <FilterOption 
+                        <FilterOption
                             categories={categoriesList}
+                            onCategoryChange={handleCategoryChange}
+                            onPriceChange={handlePriceChange}
                         />
                     </div>
                     <table className={styles['products-table']}>
@@ -180,12 +101,12 @@ function ProductsListManage() {
                         <tbody>
                             {currentProducts.map((product, index) => (
                                 <tr key={index}>
-                                    <td>{product.id}</td>
-                                    <td><img src={product.image} alt={product.name} className={styles['product-image']} /></td>
+                                    <td>{product.product_id}</td>
+                                    <td><img src={product.image_url} alt={product.name} className={styles['product-image']} /></td>
                                     <td>{product.name}</td>
                                     <td>{product.cost}</td>
                                     <td>{product.discount}</td>
-                                    <td>{product.category}</td>
+                                    <td>{product.category_name}</td>
                                     <td>{product.quantity}</td>
                                     <td>
                                         <button className={styles['edit-btn']}>Sửa</button>
@@ -214,6 +135,6 @@ function ProductsListManage() {
             </div>
         </div>
     );
-}
+};
 
 export default ProductsListManage;

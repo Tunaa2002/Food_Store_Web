@@ -1,6 +1,6 @@
 import ConnectionDB from '../config/connectionDB.js';
-import dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
 
 dotenv.config();
 
@@ -48,8 +48,10 @@ class accountService {
                     const accessToken = jwt.sign(
                         { username: user.username, role: user.role },
                         process.env.ACCESS_TOKEN_SECRET,
-                        { expiresIn: '8h' }
+                        { expiresIn: '60m' }
                     )
+                    
+                    
                     resolve({ accessToken });
                 } else {
                     resolve(null);

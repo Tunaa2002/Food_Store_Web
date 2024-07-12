@@ -5,8 +5,7 @@ import { useRouter } from 'next/navigation';
 import jwtDecode from 'jsonwebtoken';
 import PrivateLayoutProps from '@/common/interfaces/privateLayout';
 
-
-export default function PrivateLayout({ children }: PrivateLayoutProps ) {
+const PrivateLayout: React.FC<PrivateLayoutProps> = ({ children }) => {
     const router = useRouter();
 
     useEffect(() => {
@@ -23,18 +22,18 @@ export default function PrivateLayout({ children }: PrivateLayoutProps ) {
                 const { role } = decodedToken;
 
                 if (role !== 'admin') {
-                    alert('Bạn không có quyền truy cập vào trang này!');
+                    // alert('Bạn không có quyền truy cập vào trang này!');
                     router.replace('/');
                 }
             } catch (error: any) {
                 console.error('Error during token verification:', error.message);
-                alert('Đã xảy ra lỗi, vui lòng thử lại sau');
+                // alert('Đã xảy ra lỗi, vui lòng thử lại sau');
                 router.replace('/sign-in');
             }
         };
-        if (typeof window !== 'undefined') {
-            checkAuth();
-        }
+
+        // Gọi hàm kiểm tra ngay khi component được render
+        checkAuth();
     }, [router]);
 
     return (
@@ -42,4 +41,6 @@ export default function PrivateLayout({ children }: PrivateLayoutProps ) {
             {children}
         </>
     );
-}
+};
+
+export default PrivateLayout;

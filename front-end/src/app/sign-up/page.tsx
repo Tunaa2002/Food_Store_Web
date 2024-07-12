@@ -96,7 +96,7 @@ function SignUp() {
                         <input type="password" id="repassword" name="repassword" placeholder='Nhập lại mật khẩu' value={repassword} onChange={handleChange} required />
                     </div>
                     <Link href="/sign-in" className={styles['nav-link']}>Đến đăng nhập</Link>
-                    <button className={styles['submit-button']} type="button" onClick={handleSubmit} disabled={!isFormFilled}>Đăng ký</button>
+                    <button className={styles['submit-button']} type="submit" onClick={handleSubmit} disabled={!isFormFilled}>Đăng ký</button>
                 </form>
             </div>
         </div>

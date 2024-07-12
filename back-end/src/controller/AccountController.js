@@ -42,6 +42,10 @@ class accountController {
             });
         }
     }
+
+    async VerifyToken(req, res) {
+        res.status(200).json({ valid: true });
+    }
 }
 
 const AccountController = new accountController()

@@ -3,11 +3,18 @@
 import styles from './product1.module.css';
 import Link from 'next/link';
 import ProductProps from '@/common/interfaces/productProps';
-import axios from 'axios';
+import { useCart } from '@/common/contexts/cartContext';
+import { formatCurrency } from '@/common/utils/priceFormat';
 
 
-const Product1: React.FC<ProductProps> = ({ image, productId, title, discount, cost, rateAvg, orderNum }) => {
-    const renderStars = (rate: number) => {
+const Product1: React.FC<ProductProps> = ({ image_url, product_id, name, discount, cost, average_rating, orderNum }) => {
+    const { addToCart } = useCart();
+    const renderStars = (rate: number | null | undefined) => {
+
+        if (rate === null || rate === undefined) {
+            return null;
+        }
+
         const fullStars = Math.floor(rate);
         const halfStar = rate % 1 >= 0.1 ? 1 : 0;
         const emptyStars = 5 - fullStars - halfStar;
@@ -29,31 +36,14 @@ const Product1: React.FC<ProductProps> = ({ image, productId, title, discount, c
         return stars;
     };
 
-    const handleOrderClick = async () => {
-        let cart = JSON.parse(localStorage.getItem('cart') || '[]');
-        const productIndex = cart.findIndex((item: any) => item.productId === productId);
+    const handleOrderClick = () => {
+        const item = { image_url, product_id, name, discount, cost, average_rating, orderNum };
+        addToCart(item);
+    };
 
-        if (productIndex !== -1) {
-            cart[productIndex].quantity += 1;
-        } else {
-            cart.push({ image, productId, title, discount, cost, rateAvg, orderNum, quantity: 1 });
-        }
-
-        localStorage.setItem('cart', JSON.stringify(cart));
-
-        
-        window.dispatchEvent(new Event('storage'));
-
-        const token = localStorage.getItem('token');
-        if (token) {
-            try {
-                await axios.post('/api/cart', { cartItem: { productId, quantity: cart[productIndex]?.quantity || 1 } }, {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
-            } catch (error) {
-                console.error('Failed to update cart in database', error);
-            }
-        }
+    const handleProductClick = () => {
+        const product = { image_url, product_id, name, discount, cost, average_rating, orderNum };
+        localStorage.setItem('productDetail', JSON.stringify(product));
     };
     
     return (
@@ -61,7 +51,7 @@ const Product1: React.FC<ProductProps> = ({ image, productId, title, discount, c
             <div className={styles['product-container']}>
                 <div className={styles['product-image']}>
                     <img
-                        src={image}
+                        src={image_url}
                         alt='Product Image'
                         className={styles['img']}
                     />
@@ -71,27 +61,27 @@ const Product1: React.FC<ProductProps> = ({ image, productId, title, discount, c
                         <input
                             name='id'
                             type='hidden'
-                            value={productId}
+                            value={product_id}
                             className={styles['product-id']}
                         />
-                        <h2 className={styles['h2']}>{title}</h2>
+                        <h2 className={styles['h2']}>{name}</h2>
                     </div>
                     <div className={styles['price']}>
-                        <span className={`${styles['mr8']} ${styles['discount']}`}>{discount} VNĐ</span>
-                        <span className={styles['cost']}>{cost} VNĐ</span>
+                        <span className={`${styles['mr8']} ${styles['discount']}`}>{formatCurrency(discount)} VNĐ</span>
+                        <span className={styles['cost']}>{formatCurrency(cost)} VNĐ</span>
                     </div>
                     <div className={styles['rating']}>
                         <div className={styles['star-icon']}>
-                            {renderStars(rateAvg)}
+                            {renderStars(average_rating)}
                         </div>
-                        <span className={styles['mr8']}>{rateAvg}</span>
+                        <span className={styles['mr8']}>{average_rating}</span>
                         <span className={styles['order-num']}>
                             {orderNum} lượt mua
                         </span>
                     </div>
-                    <Link href='/xem-chi-tiet'>Xem chi tiết</Link>
+                    <Link href={`/product-detail/${product_id}`} onClick={handleProductClick}>Xem chi tiết</Link>
                     <i className={`${styles['bi']} ${styles['bi-heart-fill']} bi-heart-fill`}></i>
-                    <button className={styles['order-btn']} onClick={handleOrderClick}>Đặt hàng</button>
+                    <button className={styles['order-btn']} onClick={handleOrderClick}>Thêm vào giỏ</button>
                 </div>
             </div>
         </div>

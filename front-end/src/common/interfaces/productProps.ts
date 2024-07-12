@@ -1,9 +1,13 @@
 export default interface ProductProps {
-    productId: number;
-    image: string;
-    title: string;
-    discount: number;
+    product_id: number;
+    name: string;
+    description: string | null;
     cost: number;
-    rateAvg: number;
+    discount: number;
+    category_id: string;
+    image_url: string;
+    average_rating?: number;
+    quantity: number;
     orderNum: number;
+    category_name: string;
 }

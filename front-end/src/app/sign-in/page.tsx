@@ -36,10 +36,10 @@ function SignIn() {
               username,
               password
             });
-      
+    
             const { accessToken } = response.data;
-      
-            const expiry = new Date().getTime() + 8 * 60 * 60 * 1000; 
+    
+            const expiry = new Date().getTime() + 60 * 1000; 
             localStorage.setItem('user', JSON.stringify({ accessToken, expiry }));
             window.location.href = '/';
           } catch (error: any) {
@@ -68,7 +68,7 @@ function SignIn() {
                     </div>
                     <Link href ="/sign-up" className={styles['nav-link']}>Đến đăng ký</Link>
                     <Link href ="/forgot-password" className={styles['nav-link']}>Quên mật khẩu?</Link>
-                    <button className={styles['submit-button']} type="button" onClick={handleSignIn} disabled={!isFormFilled}>Đăng nhập</button>
+                    <button className={styles['submit-button']} type="submit" onClick={handleSignIn} disabled={!isFormFilled}>Đăng nhập</button>
                 </form>
             </div>
         </div>

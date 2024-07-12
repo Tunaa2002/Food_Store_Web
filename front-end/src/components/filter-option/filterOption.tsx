@@ -1,21 +1,30 @@
 'use client'
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './filterOption.module.css';
 import Slider from '@mui/material/Slider';
 import FilterOptionProps from '@/common/interfaces/filterOption';
 
-const FilterOption: React.FC<FilterOptionProps> = ({ categories }) => {
+
+const FilterOption: React.FC<FilterOptionProps> = ({ categories, onCategoryChange, onPriceChange }) => {
     const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
     const [priceRange, setPriceRange] = useState<number[]>([0, 1000000]);
     const [minPrice, setMinPrice] = useState<string>('0');
     const [maxPrice, setMaxPrice] = useState<string>('1000000');
 
-    const handleCategoryChange = (category: string) => {
+    useEffect(() => {
+        onCategoryChange(selectedCategories);
+    }, [selectedCategories, onCategoryChange]);
+
+    useEffect(() => {
+        onPriceChange(priceRange);
+    }, [priceRange, onPriceChange]);
+
+    const handleCategoryChange = (categoryId: string) => {
         setSelectedCategories(prevState =>
-            prevState.includes(category)
-                ? prevState.filter(c => c !== category)
-                : [...prevState, category]
+            prevState.includes(categoryId)
+                ? prevState.filter(id => id !== categoryId)
+                : [...prevState, categoryId]
         );
     };
 
@@ -39,27 +48,22 @@ const FilterOption: React.FC<FilterOptionProps> = ({ categories }) => {
         setPriceRange([priceRange[0], Number(value)]);
     };
 
-    const handleFilterApply = () => {
-        console.log('Selected Categories:', selectedCategories);
-        console.log('Price Range:', priceRange);
-    };
-
     return (
         <div className={styles['filter-main']}>
             <div className={styles['filter-container']}>
                 <div className={styles['filter-section']}>
                     <h3>Lọc theo thể loại</h3>
-                    {categories.map((category, index) => (
+                    {categories.map(({ categoryId, name }, index) => (
                         <div key={index} className={styles['filter-item']}>
                             <input
                                 type="checkbox"
-                                id={`category-${index}`}
-                                name={category}
-                                value={category}
-                                checked={selectedCategories.includes(category)}
-                                onChange={() => handleCategoryChange(category)}
+                                id={`category-${categoryId}`}
+                                name={name}
+                                value={categoryId}
+                                checked={selectedCategories.includes(categoryId)}
+                                onChange={() => handleCategoryChange(categoryId)}
                             />
-                            <label htmlFor={`category-${index}`}>{category}</label>
+                            <label htmlFor={`category-${categoryId}`}>{name}</label>
                         </div>
                     ))}
                 </div>
@@ -88,7 +92,6 @@ const FilterOption: React.FC<FilterOptionProps> = ({ categories }) => {
                             className={styles['price-input']}
                         />
                     </div>
-                    <button className={styles['send-btn']} onClick={handleFilterApply}>Xác nhận</button>
                 </div>
             </div>
         </div>

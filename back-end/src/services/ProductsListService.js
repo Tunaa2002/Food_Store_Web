@@ -7,7 +7,7 @@ class productsListService {
             const client = await pool.connect();
             try {
                 const query = `
-                    SELECT p.product_id, p.name, p.description, p.cost, p.discount, c.name AS category_name, p.quantity
+                    SELECT p.product_id, p.image_url, p.name, p.category_id, p.description, p.cost, p.discount, c.name AS category_name, p.quantity
                     FROM Products p
                     JOIN Categories c ON p.category_id = c.category_id
                 `;

@@ -1,37 +1,76 @@
+'use client'
+
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import styles from './foods.module.css';
 import container from '@/common/styles/style.module.css';
 import Product1 from '@/components/product1/product1';
 import FilterOption from '@/components/filter-option/filterOption';
+import ProductProps from '@/common/interfaces/productProps';
+import Category from '@/common/interfaces/categories';
+import { filterByCategories } from '@/common/utils/categoriesFilter';
+import { filterByPriceRange } from '@/common/utils/priceFilter';
 
 function Foods() {
-    const productData = [
-        {
-            image: 'https://down-tx-vn.img.susercontent.com/vn-11134513-7r98o-lstqa2yq1qys29@resize_ss280x175!@crop_w280_h175_cT',
-            productId: 1,
-            title: 'Cơm gà xối mỡ',
-            discount: 20000,
-            cost: 25000,
-            rateAvg: 4.5,
-            orderNum: 150,
-        },
-        {
-            image: 'https://down-bs-vn.img.susercontent.com/vn-11134513-7r98o-lsv7jl8ilrix5f@resize_ss280x175!@crop_w280_h175_cT',
-            productId: 2,
-            title: 'Bánh mì thập cẩm',
-            discount: 30000,
-            cost: 35000,
-            rateAvg: 3.9,
-            orderNum: 130,
-        },
+    const [productData, setProductData] = useState<ProductProps[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null)
+    const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+    const [priceRange, setPriceRange] = useState<number[]>([0, 1000000]);
+    const [filteredProductData, setFilteredProductData] = useState<ProductProps[]>([]);
+
+    const categoriesList: Category[] = [
+        {categoryId: 'F01', name: 'Đồ ăn nhanh'},
+        {categoryId: 'F02', name: 'Đồ ăn vặt'},
+        {categoryId: 'F03', name: 'Đồ ăn nhẹ'},
+        {categoryId: 'F04', name: 'Đồ ăn chính'},
+        {categoryId: 'F05', name: 'Đồ ăn chay'},
     ];
 
-    const categoriesList = [
-        'Đồ ăn nhanh',
-        'Đồ ăn vặt',
-        'Đồ ăn nhẹ',
-        'Đồ ăn chính',
-        'Đồ ăn chay',
-    ];
+    useEffect(() => {
+        const fetchFoods = async () => {
+            try {
+                const response = await axios.get<ProductProps[]>('http://localhost:5000/foods');
+                setProductData(response.data);
+                setFilteredProductData(response.data);
+                setLoading(false);
+            } catch (err: any) {
+                setError(err.message);
+                setLoading(false);
+            }
+        };
+
+        fetchFoods();
+    }, []);
+
+    useEffect(() => {
+        applyFilters();
+    }, [selectedCategories, priceRange]);
+
+    const applyFilters = () => {
+        let filteredProducts = productData;
+
+        filteredProducts = filterByCategories(filteredProducts, selectedCategories);
+        filteredProducts = filterByPriceRange(filteredProducts, priceRange);
+
+        setFilteredProductData(filteredProducts);
+    };
+
+    const handleCategoryChange = (selectedCategories: string[]) => {
+        setSelectedCategories(selectedCategories);
+    };
+
+    const handlePriceChange = (priceRange: number[]) => {
+        setPriceRange(priceRange);
+    };
+
+    if (loading) {
+        return <p>Loading...</p>;
+    }
+
+    if (error) {
+        return <p>Error: {error}</p>;
+    }
 
     return (
         <div className={styles['food-main']}>
@@ -39,19 +78,21 @@ function Foods() {
                 <div className={styles['filter']}>
                     <FilterOption 
                         categories={categoriesList}
+                        onCategoryChange={handleCategoryChange}
+                        onPriceChange={handlePriceChange}
                     />
                 </div>
                 <div className={styles['food-content']}>
-                    {productData.map((data, index) => (
+                    {filteredProductData.map((data) => (
                         <Product1
-                            key={data.productId}
-                            image={data.image}
-                            productId={data.productId}
-                            title={data.title}
+                            key={data.product_id}
+                            image_url={data.image_url}
+                            product_id={data.product_id}
+                            name={data.name}
                             discount={data.discount}
                             cost={data.cost}
-                            rateAvg={data.rateAvg}
-                            orderNum={data.orderNum}
+                            average_rating={data.average_rating || 0} 
+                            orderNum={data.quantity}
                         />
                     ))}
                 </div>

@@ -1,3 +1,4 @@
-export default interface Categories {
-    categories: string
+export default interface Category {
+    categoryId: string;
+    name: string;
 }
