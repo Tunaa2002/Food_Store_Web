@@ -7,7 +7,7 @@ import { useCart } from '@/common/contexts/cartContext';
 import { formatCurrency } from '@/common/utils/priceFormat';
 
 
-const Product1: React.FC<ProductProps> = ({ image_url, product_id, name, discount, cost, average_rating, orderNum }) => {
+const Product1: React.FC<ProductProps> = ({ image_url, product_id, name, description, discount, cost, average_rating, quantity }) => {
     const { addToCart } = useCart();
     const renderStars = (rate: number | null | undefined) => {
 
@@ -37,12 +37,12 @@ const Product1: React.FC<ProductProps> = ({ image_url, product_id, name, discoun
     };
 
     const handleOrderClick = () => {
-        const item = { image_url, product_id, name, discount, cost, average_rating, orderNum };
+        const item = { image_url, product_id, name, description, discount, cost, average_rating, quantity };
         addToCart(item);
     };
 
     const handleProductClick = () => {
-        const product = { image_url, product_id, name, discount, cost, average_rating, orderNum };
+        const product = { image_url, product_id, name, description, discount, cost, average_rating, quantity };
         localStorage.setItem('productDetail', JSON.stringify(product));
     };
     
@@ -65,6 +65,7 @@ const Product1: React.FC<ProductProps> = ({ image_url, product_id, name, discoun
                             className={styles['product-id']}
                         />
                         <h2 className={styles['h2']}>{name}</h2>
+                        <p className={styles['description']}>{description || ''}</p>
                     </div>
                     <div className={styles['price']}>
                         <span className={`${styles['mr8']} ${styles['discount']}`}>{formatCurrency(discount)} VNĐ</span>
@@ -76,7 +77,7 @@ const Product1: React.FC<ProductProps> = ({ image_url, product_id, name, discoun
                         </div>
                         <span className={styles['mr8']}>{average_rating}</span>
                         <span className={styles['order-num']}>
-                            {orderNum} lượt mua
+                            Còn lại {quantity}
                         </span>
                     </div>
                     <Link href={`/product-detail/${product_id}`} onClick={handleProductClick}>Xem chi tiết</Link>

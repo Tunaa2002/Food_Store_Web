@@ -12,41 +12,18 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [role, setRole] = useState<string | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
-  // useEffect(() => {
-  //   const storedUser = localStorage.getItem('user');
-  //   if (storedUser) {
-  //     try {
-  //       const { accessToken, expiry } = JSON.parse(storedUser);
-  //       const decodedToken: any = jwtDecode.decode(accessToken);
-  //       const { username, role } = decodedToken;
-
-  //       // Check token expiration
-  //       if (new Date().getTime() < expiry) {
-  //         setUsername(username);
-  //         setRole(role);
-  //         setIsLoggedIn(true);
-  //       } else {
-  //         localStorage.removeItem('user');
-  //       }
-  //     } catch (error: any) {
-  //       console.error('Error decoding JWT token:', error.message);
-  //       localStorage.removeItem('user');
-  //     }
-  //   }
-  // }, []);
   useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
+    const token = localStorage.getItem('user');
+    if (token) {
       try {
-        const { accessToken, expiry } = JSON.parse(storedUser);
-        
+        const { accessToken, expiry } = JSON.parse(token);
+      
         // Kiểm tra token hết hạn
         if (new Date().getTime() >= expiry) {
           localStorage.removeItem('user');
           return;
         }
-        
-        // Xác thực token bằng API
+
         axios.post('http://localhost:5000/verify-token', {}, {
           headers: { Authorization: `Bearer ${accessToken}` }
         })
@@ -75,6 +52,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signOut = () => {
     localStorage.removeItem('user');
     localStorage.removeItem('productDetail');
+    localStorage.removeItem('cart');
     setUsername(null);
     setRole(null);
     setIsLoggedIn(false);

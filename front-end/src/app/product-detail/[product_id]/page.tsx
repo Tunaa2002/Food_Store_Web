@@ -5,7 +5,7 @@ import styles from './productDetail.module.css';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import HoverRating from '@/components/rating/rating';
-import DefaultComponent from '@/components/comment/comment';
+// import DefaultComponent from '@/components/comment/comment';
 import ProductProps from '@/common/interfaces/productProps';
 import { formatCurrency } from '@/common/utils/priceFormat';
 import { useCart } from '@/common/contexts/cartContext';
@@ -55,7 +55,7 @@ function ProductDetail() {
     };
 
     const handleOrderClick = () => {
-        const item = { image_url: product.image_url, product_id: product.product_id, name: product.name, discount: product.discount, cost: product.cost, average_rating: product.average_rating, orderNum: product.orderNum };
+        const item = { image_url: product.image_url, product_id: product.product_id, name: product.name, discount: product.discount, cost: product.cost, average_rating: product.average_rating, quantity: product.quantity };
         addToCart(item);
     };
 
@@ -91,7 +91,7 @@ function ProductDetail() {
                                 </div>
                                 <span className={styles['mr8']}>({product.average_rating})</span>
                                 <span className={styles['order-num']}>
-                                    lượt mua ({product.orderNum})
+                                    Còn lại ({product.quantity})
                                 </span>
                             </div>
                             <i className={`${styles['bi']} ${styles['bi-heart-fill']} bi-heart-fill`}></i>
@@ -103,9 +103,9 @@ function ProductDetail() {
                     <h3 className={styles['title']}>Đánh giá sản phẩm</h3>
                     <HoverRating />
                 </div>
-                <div className={styles['comments']}>
+                {/* <div className={styles['comments']}>
                     <DefaultComponent />
-                </div>
+                </div> */}
             </div>
         </div>
     );

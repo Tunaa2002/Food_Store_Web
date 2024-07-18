@@ -1,5 +1,5 @@
 export default interface ProductProps {
-    product_id: number;
+    product_id?: number;
     name: string;
     description: string | null;
     cost: number;

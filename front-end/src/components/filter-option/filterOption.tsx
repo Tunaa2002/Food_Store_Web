@@ -20,11 +20,11 @@ const FilterOption: React.FC<FilterOptionProps> = ({ categories, onCategoryChang
         onPriceChange(priceRange);
     }, [priceRange, onPriceChange]);
 
-    const handleCategoryChange = (categoryId: string) => {
+    const handleCategoryChange = (category_id: string) => {
         setSelectedCategories(prevState =>
-            prevState.includes(categoryId)
-                ? prevState.filter(id => id !== categoryId)
-                : [...prevState, categoryId]
+            prevState.includes(category_id)
+                ? prevState.filter(id => id !== category_id)
+                : [...prevState, category_id]
         );
     };
 
@@ -53,17 +53,17 @@ const FilterOption: React.FC<FilterOptionProps> = ({ categories, onCategoryChang
             <div className={styles['filter-container']}>
                 <div className={styles['filter-section']}>
                     <h3>Lọc theo thể loại</h3>
-                    {categories.map(({ categoryId, name }, index) => (
+                    {categories.map(({ category_id, name }, index) => (
                         <div key={index} className={styles['filter-item']}>
                             <input
                                 type="checkbox"
-                                id={`category-${categoryId}`}
+                                id={`category-${category_id}`}
                                 name={name}
-                                value={categoryId}
-                                checked={selectedCategories.includes(categoryId)}
-                                onChange={() => handleCategoryChange(categoryId)}
+                                value={category_id}
+                                checked={selectedCategories.includes(category_id)}
+                                onChange={() => handleCategoryChange(category_id)}
                             />
-                            <label htmlFor={`category-${categoryId}`}>{name}</label>
+                            <label htmlFor={`category-${category_id}`}>{name}</label>
                         </div>
                     ))}
                 </div>
@@ -83,6 +83,7 @@ const FilterOption: React.FC<FilterOptionProps> = ({ categories, onCategoryChang
                             value={minPrice}
                             onChange={handleMinPriceChange}
                             className={styles['price-input']}
+                            step={1000}
                         />
                         <span>đến</span>
                         <input
@@ -90,6 +91,7 @@ const FilterOption: React.FC<FilterOptionProps> = ({ categories, onCategoryChang
                             value={maxPrice}
                             onChange={handleMaxPriceChange}
                             className={styles['price-input']}
+                            step={1000}
                         />
                     </div>
                 </div>

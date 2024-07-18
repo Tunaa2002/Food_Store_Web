@@ -12,6 +12,31 @@
     width: 30%;
 }
 
-.food-content {
+.drink-content {
     width: 70%;
+    max-height: 800px;
+    /* overflow-y: auto;  */
+    overflow-x: hidden; 
+    padding-right: 10px; 
+    overflow-y: scroll;
+    -ms-overflow-style: none; 
+    scrollbar-width: none;
+}
+
+.drink-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.drink-content::-webkit-scrollbar-track {
+    background: #f1f1f1; 
+    border-radius: 10px;
+}
+
+.drink-content::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+}
+
+.drink-content::-webkit-scrollbar-thumb:hover {
+    background: #555;
 }

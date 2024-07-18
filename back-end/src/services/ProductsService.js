@@ -43,6 +43,26 @@ class productsService {
         });
     }
 
+    async productDetail(product_id) {
+        return new Promise(async (resolve, reject) => {
+            const pool = ConnectionDB.getPool();
+            const client = await pool.connect();
+            try {
+                query = `
+                    SELECT * FROM Products
+                    WHERE product_id = $1;
+                `;
+                const values = [product_id];
+                const result = await client.query(query, values);
+                resolve(result.rows[0]);
+            } catch (error) {
+                reject(error);
+            } finally {
+                client.release();
+            }
+        })
+    }
+
 }
 
 const ProductsService = new productsService();

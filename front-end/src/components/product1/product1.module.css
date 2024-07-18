@@ -31,11 +31,16 @@
 
 .product-info .title {
     margin-bottom: 8px;
+    width: 90%;
 }
 
 .product-info .h2 {
     margin: 0;
     font-size: 18px;
+}
+
+.description {
+    margin: 8px 0 0 0;
 }
 
 .price {

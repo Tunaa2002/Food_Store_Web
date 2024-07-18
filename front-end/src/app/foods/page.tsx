@@ -20,11 +20,11 @@ function Foods() {
     const [filteredProductData, setFilteredProductData] = useState<ProductProps[]>([]);
 
     const categoriesList: Category[] = [
-        {categoryId: 'F01', name: 'Đồ ăn nhanh'},
-        {categoryId: 'F02', name: 'Đồ ăn vặt'},
-        {categoryId: 'F03', name: 'Đồ ăn nhẹ'},
-        {categoryId: 'F04', name: 'Đồ ăn chính'},
-        {categoryId: 'F05', name: 'Đồ ăn chay'},
+        {category_id: 'F01', name: 'Đồ ăn nhanh'},
+        {category_id: 'F02', name: 'Đồ ăn vặt'},
+        {category_id: 'F03', name: 'Đồ ăn nhẹ'},
+        {category_id: 'F04', name: 'Đồ ăn chính'},
+        {category_id: 'F05', name: 'Đồ ăn chay'},
     ];
 
     useEffect(() => {
@@ -89,10 +89,11 @@ function Foods() {
                             image_url={data.image_url}
                             product_id={data.product_id}
                             name={data.name}
+                            description={data.description}
                             discount={data.discount}
                             cost={data.cost}
                             average_rating={data.average_rating || 0} 
-                            orderNum={data.quantity}
+                            quantity={data.quantity || 0}
                         />
                     ))}
                 </div>

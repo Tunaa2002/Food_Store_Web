@@ -39,7 +39,7 @@ function SignIn() {
     
             const { accessToken } = response.data;
     
-            const expiry = new Date().getTime() + 60 * 1000; 
+            const expiry = new Date().getTime() + 60 * 60 * 1000; 
             localStorage.setItem('user', JSON.stringify({ accessToken, expiry }));
             window.location.href = '/';
           } catch (error: any) {

@@ -1,76 +1,29 @@
 'use client'
 
 import styles from './categories.module.css';
-import React, { useState } from 'react';
-import jwtDecode from 'jwt-decode';
+import React, { useEffect, useState } from 'react';
+import Category from '@/common/interfaces/categories';
+import getCategories from '@/app/api/user/categories/getCategories';
 
 
-const categories = [
-    {
-        category_id: 'F01',
-        name: 'Đồ ăn nhanh',
-        type: 'Đồ ăn',
-    },
-    {
-        category_id: 'F02',
-        name: 'Đồ ăn vặt',
-        type: 'Đồ ăn',
-    },
-    {
-        category_id: 'F03',
-        name: 'Đồ ăn nhẹ',
-        type: 'Đồ ăn',
-    },
-    {
-        category_id: 'F04',
-        name: 'Đồ ăn chính',
-        type: 'Đồ ăn',
-    },
-    {
-        category_id: 'F05',
-        name: 'Đồ ăn chay',
-        type: 'Đồ ăn',
-    },
-    {
-        category_id: 'D01',
-        name: 'Nước ngọt',
-        type: 'Đồ uống',
-    },
-    {
-        category_id: 'D02',
-        name: 'Nước trái cây',
-        type: 'Đồ uống',
-    },
-    {
-        category_id: 'D03',
-        name: 'Sữa',
-        type: 'Đồ uống',
-    },
-    {
-        category_id: 'D04',
-        name: 'Trà sữa',
-        type: 'Đồ uống',
-    },
-    {
-        category_id: 'D05',
-        name: 'Đồ uống có cồn',
-        type: 'Đồ uống',
-    },
-    {
-        category_id: 'D06',
-        name: 'Nước khoáng',
-        type: 'Đồ uống',
-    },
-    {
-        category_id: 'D07',
-        name: 'Cà phê',
-        type: 'Đồ uống',
-    },
-]
 
 function CategoriesManage() {
+    const [categories, setCategories] = useState<Category[]>([])
     const [currentPage, setCurrentPage] = useState(1);
     const categoryPerPage = 10;
+
+    useEffect(() => {
+        fetchCategories();
+    }, []);
+
+    const fetchCategories = async () => {
+        try {
+            const data = await getCategories();
+            setCategories(data);
+        } catch (error) {
+            console.error('Error fetching categories:', error);
+        }
+    };
 
     const handlePageChange = (pageNumber: number) => {
         setCurrentPage(pageNumber);
@@ -92,7 +45,7 @@ function CategoriesManage() {
                                 <input className={styles['search-text']} type='text' name='search' placeholder='Nhập tên sản phẩm' />
                                 <i className={`${styles['bi']} ${styles['bi-search']} ${styles['search-btn']} ${'bi-search'}`}></i>
                             </div>
-                            <button className={styles['add-category']}>Thêm sản phẩm</button>
+                            <button className={styles['add-category']}>Thêm loại sản phẩm</button>
                         </div>
                     </div>
                     <div className={styles['categories-list']}>
@@ -101,7 +54,7 @@ function CategoriesManage() {
                                 <tr>
                                     <th>ID</th>
                                     <th>Tên loại sản phẩm</th>
-                                    <th>Thể loại</th>
+                                    <th>Số sản phẩm</th>
                                     <th>Chỉnh sửa</th>
                                 </tr>
                             </thead>
@@ -110,7 +63,7 @@ function CategoriesManage() {
                                     <tr key={index}>
                                         <td>{category.category_id}</td>
                                         <td>{category.name}</td>
-                                        <td>{category.type}</td>
+                                        <td>{category.product_count}</td>
                                         <td>
                                             <button className={styles['edit-btn']}>Sửa</button>
                                             <button className={styles['delete-btn']}>Xóa</button>
@@ -137,6 +90,7 @@ function CategoriesManage() {
                     </div>
                 </div>
             </div>
+            
     );
 }
 

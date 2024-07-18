@@ -1,4 +1,5 @@
 export default interface Category {
-    categoryId: string;
+    category_id: string;
     name: string;
+    product_count?: number;
 }

@@ -20,13 +20,13 @@ function Drinks() {
     const [priceRange, setPriceRange] = useState<number[]>([0, 1000000]);
 
     const categoriesList: Category[] = [
-        { categoryId: 'D01', name: 'Nước ngọt' },
-        { categoryId: 'D02', name: 'Nước trái cây' },
-        { categoryId: 'D03', name: 'Sữa' },
-        { categoryId: 'D04', name: 'Trà sữa' },
-        { categoryId: 'D05', name: 'Đồ uống có cồn' },
-        { categoryId: 'D06', name: 'Nước khoáng' },
-        { categoryId: 'D07', name: 'Cà phê' }
+        { category_id: 'D01', name: 'Nước ngọt' },
+        { category_id: 'D02', name: 'Nước trái cây' },
+        { category_id: 'D03', name: 'Sữa' },
+        { category_id: 'D04', name: 'Trà sữa' },
+        { category_id: 'D05', name: 'Đồ uống có cồn' },
+        { category_id: 'D06', name: 'Nước khoáng' },
+        { category_id: 'D07', name: 'Cà phê' }
     ];
 
     useEffect(() => {
@@ -85,17 +85,18 @@ function Drinks() {
                         onPriceChange={handlePriceChange}
                     />
                 </div>
-                <div className={styles['food-content']}>
+                <div className={styles['drink-content']}>
                     {filteredProductData.map((data) => (
                         <Product1
                             key={data.product_id}
                             image_url={data.image_url}
                             product_id={data.product_id}
                             name={data.name}
+                            description={data.description}
                             discount={data.discount}
                             cost={data.cost}
                             average_rating={data.average_rating || 0}
-                            orderNum={10}
+                            quantity={data.quantity || 0}
                         />
                     ))}
                 </div>

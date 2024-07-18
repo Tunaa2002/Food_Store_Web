@@ -35,7 +35,7 @@ class accountService {
             const client = await pool.connect();
 
             const query = `
-                SELECT username, role
+                SELECT username, role, user_id
                 FROM Users
                 WHERE username = $1 AND password = crypt($2, password);
             `;
@@ -46,7 +46,7 @@ class accountService {
                 if (result.rows.length > 0) {
                     const user = result.rows[0];
                     const accessToken = jwt.sign(
-                        { username: user.username, role: user.role },
+                        { username: user.username, role: user.role, user_id: user.user_id },
                         process.env.ACCESS_TOKEN_SECRET,
                         { expiresIn: '60m' }
                     )

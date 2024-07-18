@@ -1,16 +1,8 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
-
-interface CartContextType {
-  cartCount: number;
-  cartItems: any[];
-  totalPrice: number;
-  updateCartCount: () => void;
-  addToCart: (item: any) => void;
-  removeFromCart: (index: number) => void;
-  updateItemQuantity: (index: number, delta: number) => void;
-}
+import CartContextType from '../interfaces/cartContext';
+import { getCurrentCart, mergeCart, removeCartItem } from '@/app/api/user/cart/cart';
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
@@ -45,15 +37,35 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
     localStorage.setItem('cart', JSON.stringify(cart));
     updateCartCount();
+
     window.dispatchEvent(new Event('storage'));
   };
 
-  const removeFromCart = (index: number) => {
+  const removeFromCart = async (index: number) => {
+    const token = localStorage.getItem('user');
     let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+
     cart = cart.filter((_: any, i: number) => i !== index);
-    localStorage.setItem('cart', JSON.stringify(cart));
+    if (cart.length === 0) {
+        localStorage.removeItem('cart');
+    } else {
+        localStorage.setItem('cart', JSON.stringify(cart));
+    }
     updateCartCount();
+    setCartItems(cart);
     window.dispatchEvent(new Event('storage'));
+    if (token) {
+        try {
+            const { accessToken, expiry } = JSON.parse(token);
+            if (new Date().getTime() >= expiry) {
+                localStorage.removeItem('user');
+                return;
+            }
+            await removeCartItem(accessToken, cart[index].product_id);
+        } catch (error) {
+            console.error('Failed to remove item from cart:', error);
+        }
+    }
   };
 
   const updateItemQuantity = (index: number, delta: number) => {
@@ -67,12 +79,40 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const syncCart = async () => {
+    const {accessToken, expiry} = JSON.parse(localStorage.getItem('user') || '{}');
+    if (new Date().getTime() >= expiry) {
+        localStorage.removeItem('user');
+        return;
+    }
+
+    if (accessToken) {
+        const localCartItems = JSON.parse(localStorage.getItem('cart') || '[]');
+        try {
+            await mergeCart(accessToken, localCartItems);
+            const serverCart = await getCurrentCart(accessToken);
+            setCartItems(serverCart.cartItems);
+            calculateTotalPrice(serverCart.cartItems);
+            localStorage.setItem('cart', JSON.stringify(serverCart.cartItems));
+            setCartCount(serverCart.cartItems.length);
+        } catch (error) {
+            console.error('Failed to sync cart:', error);
+        }
+    }
+  };
+
   useEffect(() => {
     updateCartCount();
     window.addEventListener('storage', updateCartCount);
     return () => {
       window.removeEventListener('storage', updateCartCount);
     };
+  }, []);
+
+  useEffect(() => {
+    syncCart();
+    const interval = setInterval(syncCart, 5 * 60 * 1000);
+    return () => clearInterval(interval);
   }, []);
 
   return (
