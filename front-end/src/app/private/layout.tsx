@@ -40,8 +40,8 @@ const PrivateLayout: React.FC<PrivateLayoutProps> = ({ children }) => {
         }
       };
   
-      checkAuth(); // Gọi hàm xác thực khi layout được khởi động
-    }, []); // Effect này chỉ cần chạy khi layout được khởi động, không phụ thuộc vào router
+      checkAuth(); 
+    }, []);
   
     return <>{children}</>;
   };

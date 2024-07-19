@@ -37,13 +37,12 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
     localStorage.setItem('cart', JSON.stringify(cart));
     updateCartCount();
-
-    window.dispatchEvent(new Event('storage'));
   };
 
   const removeFromCart = async (index: number) => {
     const token = localStorage.getItem('user');
     let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+    const productId = cart[index].product_id;
 
     cart = cart.filter((_: any, i: number) => i !== index);
     if (cart.length === 0) {
@@ -53,18 +52,18 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
     updateCartCount();
     setCartItems(cart);
-    window.dispatchEvent(new Event('storage'));
+
     if (token) {
-        try {
-            const { accessToken, expiry } = JSON.parse(token);
-            if (new Date().getTime() >= expiry) {
-                localStorage.removeItem('user');
-                return;
-            }
-            await removeCartItem(accessToken, cart[index].product_id);
-        } catch (error) {
-            console.error('Failed to remove item from cart:', error);
+      try {
+        const { accessToken, expiry } = JSON.parse(token);
+        if (new Date().getTime() >= expiry) {
+          localStorage.removeItem('user');
+          return;
         }
+        await removeCartItem(accessToken, productId);
+      } catch (error) {
+        console.error('Failed to remove item from cart:', error);
+      }
     }
   };
 
@@ -75,38 +74,37 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
       cart[index].quantity = newQuantity;
       localStorage.setItem('cart', JSON.stringify(cart));
       updateCartCount();
-      window.dispatchEvent(new Event('storage'));
     }
   };
 
   const syncCart = async () => {
-    const {accessToken, expiry} = JSON.parse(localStorage.getItem('user') || '{}');
+    const token = localStorage.getItem('user');
+    if (!token) return;
+  
+    const { accessToken, expiry } = JSON.parse(token);
     if (new Date().getTime() >= expiry) {
-        localStorage.removeItem('user');
-        return;
+      localStorage.removeItem('user');
+      return;
     }
-
+  
     if (accessToken) {
-        const localCartItems = JSON.parse(localStorage.getItem('cart') || '[]');
-        try {
-            await mergeCart(accessToken, localCartItems);
-            const serverCart = await getCurrentCart(accessToken);
-            setCartItems(serverCart.cartItems);
-            calculateTotalPrice(serverCart.cartItems);
-            localStorage.setItem('cart', JSON.stringify(serverCart.cartItems));
-            setCartCount(serverCart.cartItems.length);
-        } catch (error) {
-            console.error('Failed to sync cart:', error);
-        }
+      const localCartItems = JSON.parse(localStorage.getItem('cart') || '[]');
+      try {
+        await mergeCart(accessToken, localCartItems);
+        const serverCart = await getCurrentCart(accessToken);
+
+        localStorage.setItem('cart', JSON.stringify(serverCart.cartItems));
+        setCartItems(serverCart.cartItems);
+        calculateTotalPrice(serverCart.cartItems);
+        setCartCount(serverCart.cartItems.length);
+      } catch (error) {
+        console.error('Failed to sync cart:', error);
+      }
     }
   };
 
   useEffect(() => {
     updateCartCount();
-    window.addEventListener('storage', updateCartCount);
-    return () => {
-      window.removeEventListener('storage', updateCartCount);
-    };
   }, []);
 
   useEffect(() => {

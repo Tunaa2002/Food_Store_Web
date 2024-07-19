@@ -2,26 +2,35 @@
 'use client'
 
 import styles from './productDetail.module.css';
-import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import HoverRating from '@/components/rating/rating';
 // import DefaultComponent from '@/components/comment/comment';
 import ProductProps from '@/common/interfaces/productProps';
 import { formatCurrency } from '@/common/utils/priceFormat';
 import { useCart } from '@/common/contexts/cartContext';
+import getProductDetail from '@/app/api/user/products/getProductDetail';
+
 
 function ProductDetail() {
-    const searchParams = useSearchParams();
-    const product_id = searchParams.get('product_id');
     const [product, setProduct] = useState<ProductProps | null>(null);
     const { addToCart } = useCart();
 
     useEffect(() => {
-        const productData = localStorage.getItem('productDetail');
-        if (productData) {
-            setProduct(JSON.parse(productData));
-        }
-    }, [product_id]);
+        const fetchProductDetail = async () => {
+            const storedProduct = localStorage.getItem('productDetail');
+            if (storedProduct) {
+                const parsedProduct = JSON.parse(storedProduct);
+                const productId = parsedProduct.product_id;
+                
+                if (productId) {
+                    const fetchedProduct = await getProductDetail(productId);
+                    setProduct(fetchedProduct);
+                }
+            }
+        };
+
+        fetchProductDetail();
+    }, []);
 
     if (!product) {
         return <p>Product not found</p>;
@@ -55,7 +64,7 @@ function ProductDetail() {
     };
 
     const handleOrderClick = () => {
-        const item = { image_url: product.image_url, product_id: product.product_id, name: product.name, discount: product.discount, cost: product.cost, average_rating: product.average_rating, quantity: product.quantity };
+        const item = { image_url: product.image_url, product_id: product.product_id, name: product.name, discount: product.discount, cost: product.cost, rate_avg: product.rate_avg, quantity: product.quantity };
         addToCart(item);
     };
 
@@ -87,9 +96,9 @@ function ProductDetail() {
                             </div>
                             <div className={styles['rating']}>
                                 <div className={styles['star-icon']}>
-                                    {renderStars(product.average_rating)}
+                                    {renderStars(product.rate_avg || 0)}
                                 </div>
-                                <span className={styles['mr8']}>({product.average_rating})</span>
+                                <span className={styles['mr8']}>({product.rate_avg || 0})</span>
                                 <span className={styles['order-num']}>
                                     Còn lại ({product.quantity})
                                 </span>

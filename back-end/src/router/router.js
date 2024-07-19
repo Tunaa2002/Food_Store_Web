@@ -3,7 +3,7 @@ import AccountController from '../controller/AccountController.js';
 import ProfileController from '../controller/ProfileController.js';
 import ProductsListController from '../controller/ProductsListController.js';
 import AuthenToken from '../middleware/authenToken.js';
-import ProductsControler from '../controller/ProductsControler.js';
+import ProductsController from '../controller/ProductsController.js';
 import VerifyAdmin from '../middleware/VerifyAdmin.js';
 import CategoriesController from '../controller/CategoriesController.js';
 import CartController from '../controller/CartController.js';
@@ -22,8 +22,9 @@ router.post('/add-product',VerifyAdmin, (req, res) => ProductsListController.cre
 router.delete('/delete-product/:product_id', VerifyAdmin, (req, res) => ProductsListController.deleteProduct(req, res));
 router.post('/add-category', VerifyAdmin, (req, res) => CategoriesController.addCategory(req, res));
 
-router.get('/foods',(req, res) => ProductsControler.getFoods(req, res));
-router.get('/drinks',(req, res) => ProductsControler.getDrinks(req, res));
+router.get('/foods',(req, res) => ProductsController.getFoods(req, res));
+router.get('/drinks',(req, res) => ProductsController.getDrinks(req, res));
+router.get('/product-detail/:product_id', (req, res) => ProductsController.getProductDetail(req, res));
 
 router.post('/verify-token', AuthenToken, (req, res) => AccountController.VerifyToken(req, res));
 router.get('/current-cart', AuthenToken, (req, res) => CartController.getCurrentCart(req, res));

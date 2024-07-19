@@ -12,10 +12,14 @@ class cartController {
                 cart = await CartService.createCart(userId);
             }
 
+            let cartItems = await CartService.getCartItemsByCartId(cart.cart_id);
+
             for (const item of localCartItems) {
-                const existingItem = await CartService.getCartItem(cart.cart_id, item.product_id);
+                const existingItem = cartItems.find(ci => ci.product_id === item.product_id);
                 if (existingItem) {
-                    await CartService.updateCartItem(cart.cart_id, item);
+                    if (existingItem.quantity !== item.quantity) {
+                        await CartService.updateCartItemQuantity(cart.cart_id, item);
+                    }
                 } else {
                     await CartService.addCartItem(cart.cart_id, item);
                 }

@@ -1,14 +1,7 @@
 import axios from 'axios';
+import CartItem from '@/common/interfaces/cartItems';
 
 const API_URL = 'http://localhost:5000';
-
-interface CartItem {
-    product_id: string;
-    quantity: number;
-    discount: number;
-    image_url?: string;
-    name?: string;
-}
 
 interface CartResponse {
     cart_id: string;

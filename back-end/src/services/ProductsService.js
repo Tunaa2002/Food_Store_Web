@@ -43,12 +43,12 @@ class productsService {
         });
     }
 
-    async productDetail(product_id) {
+    async getProductDetail(product_id) {
         return new Promise(async (resolve, reject) => {
             const pool = ConnectionDB.getPool();
             const client = await pool.connect();
             try {
-                query = `
+                const query = `
                     SELECT * FROM Products
                     WHERE product_id = $1;
                 `;

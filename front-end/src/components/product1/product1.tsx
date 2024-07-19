@@ -7,8 +7,9 @@ import { useCart } from '@/common/contexts/cartContext';
 import { formatCurrency } from '@/common/utils/priceFormat';
 
 
-const Product1: React.FC<ProductProps> = ({ image_url, product_id, name, description, discount, cost, average_rating, quantity }) => {
+const Product1: React.FC<ProductProps> = ({ image_url, product_id, name, description, discount, cost, rate_avg, quantity }) => {
     const { addToCart } = useCart();
+
     const renderStars = (rate: number | null | undefined) => {
 
         if (rate === null || rate === undefined) {
@@ -37,15 +38,15 @@ const Product1: React.FC<ProductProps> = ({ image_url, product_id, name, descrip
     };
 
     const handleOrderClick = () => {
-        const item = { image_url, product_id, name, description, discount, cost, average_rating, quantity };
+        const item = { image_url, product_id, name, description, discount, cost, rate_avg, quantity };
         addToCart(item);
     };
 
     const handleProductClick = () => {
-        const product = { image_url, product_id, name, description, discount, cost, average_rating, quantity };
+        const product = { product_id };
         localStorage.setItem('productDetail', JSON.stringify(product));
     };
-    
+
     return (
         <div className={styles['product']}>
             <div className={styles['product-container']}>
@@ -73,9 +74,9 @@ const Product1: React.FC<ProductProps> = ({ image_url, product_id, name, descrip
                     </div>
                     <div className={styles['rating']}>
                         <div className={styles['star-icon']}>
-                            {renderStars(average_rating)}
+                            {renderStars(rate_avg)}
                         </div>
-                        <span className={styles['mr8']}>{average_rating}</span>
+                        <span className={styles['mr8']}>{rate_avg}</span>
                         <span className={styles['order-num']}>
                             Còn lại {quantity}
                         </span>

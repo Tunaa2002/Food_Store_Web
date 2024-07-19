@@ -10,6 +10,8 @@ import axios from 'axios';
 import { filterByCategories } from '@/common/utils/categoriesFilter';
 import { filterByPriceRange } from '@/common/utils/priceFilter';
 import Category from '@/common/interfaces/categories';
+import getCategories from '../api/user/categories/getCategories';
+import { getDrinks } from '../api/user/products/getProducts';
 
 function Drinks() {
     const [productData, setProductData] = useState<ProductProps[]>([]);
@@ -18,23 +20,14 @@ function Drinks() {
     const [error, setError] = useState<string | null>(null);
     const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
     const [priceRange, setPriceRange] = useState<number[]>([0, 1000000]);
-
-    const categoriesList: Category[] = [
-        { category_id: 'D01', name: 'Nước ngọt' },
-        { category_id: 'D02', name: 'Nước trái cây' },
-        { category_id: 'D03', name: 'Sữa' },
-        { category_id: 'D04', name: 'Trà sữa' },
-        { category_id: 'D05', name: 'Đồ uống có cồn' },
-        { category_id: 'D06', name: 'Nước khoáng' },
-        { category_id: 'D07', name: 'Cà phê' }
-    ];
+    const [categoriesList, setCategoriesList] = useState<Category[]>([]);
 
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const response = await axios.get<ProductProps[]>('http://localhost:5000/drinks');
-                setProductData(response.data);
-                setFilteredProductData(response.data);
+                const drinksData = await getDrinks()
+                setProductData(drinksData);
+                setFilteredProductData(drinksData);
                 setLoading(false);
             } catch (err: any) {
                 setError(err.message);
@@ -43,6 +36,20 @@ function Drinks() {
         };
 
         fetchProducts();
+    }, []);
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const allCategories = await getCategories();
+                const foodCategories = allCategories.filter(category => category.category_id.startsWith('D') || category.category_id.startsWith('D'));
+                setCategoriesList(foodCategories);
+            } catch (err: any) {
+                setError(err.message);
+            }
+        };
+
+        fetchCategories();
     }, []);
 
     useEffect(() => {
@@ -95,7 +102,7 @@ function Drinks() {
                             description={data.description}
                             discount={data.discount}
                             cost={data.cost}
-                            average_rating={data.average_rating || 0}
+                            rate_avg={data.rate_avg || 0}
                             quantity={data.quantity || 0}
                         />
                     ))}

@@ -50,12 +50,7 @@
     transform: translateY(-50%);
     font-size: 16px !important; 
     color: #5b636d;
-    cursor: pointer;
     padding: 0 12px 0 6px !important;
-}
-
-.search-btn:hover {
-    color: #8CB7F5;
 }
 
 .filter {

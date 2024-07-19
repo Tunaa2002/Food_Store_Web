@@ -26,6 +26,22 @@ class productsController {
             res.status(500).json({ message: 'Internal server error' });
         }
     }
+
+    async getProductDetail(req, res) {
+        const { product_id } = req.params;
+        try {
+            const productDetails = await ProductsService.getProductDetail(product_id);
+
+            if (productDetails) {
+                res.json(productDetails);
+            } else {
+                res.status(404).json({ message: 'Product not found' });
+            }
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ message: 'Internal server error' });
+        }
+    }
 }
 
 const ProductsController = new productsController();

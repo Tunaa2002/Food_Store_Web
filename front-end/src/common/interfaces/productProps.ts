@@ -6,8 +6,7 @@ export default interface ProductProps {
     discount: number;
     category_id: string;
     image_url: string;
-    average_rating?: number;
+    rate_avg?: number | 0;
     quantity: number;
-    orderNum: number;
     category_name: string;
 }

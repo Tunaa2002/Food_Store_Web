@@ -70,7 +70,7 @@
     transform: translateY(-50%);
     margin-top: 8px;
     padding: 8px 16px;
-    background-color: red;
+    background-color: #588fe2;
     color: white;
     border: none;
     cursor: pointer;
@@ -131,4 +131,19 @@
 .modal-content button:hover {
     cursor: pointer;
     background-color: #bdbcbc;
+}
+
+.empty-cart {
+    display: flex;
+    flex-direction: column;
+    /* justify-content: center; */
+}
+
+.empty-cart .cart-logo {
+    font-size: 100px;
+    text-align: center;
+}
+
+.empty-cart p {
+    text-align: center;
 }

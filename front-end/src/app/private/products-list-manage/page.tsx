@@ -6,37 +6,28 @@ import FilterOption from '@/components/filter-option/filterOption';
 import Category from '@/common/interfaces/categories';
 import ProductProps from '@/common/interfaces/productProps';
 import { formatCurrency } from '@/common/utils/priceFormat';
-import getProducts from '@/app/api/user/products/getProducts';
+import { getProducts } from '@/app/api/user/products/getProducts';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import updateProduct from '@/app/api/admin/products/updateProduct';
 import addProductAPI from '@/app/api/admin/products/addProduct';
 import deleteProduct from '@/app/api/admin/products/deleteProduct';
-
-
-const categoriesList: Category[] = [
-    { category_id: 'F01', name: 'Đồ ăn nhanh' },
-    { category_id: 'F02', name: 'Đồ ăn vặt' },
-    { category_id: 'F03', name: 'Đồ ăn nhẹ' },
-    { category_id: 'F04', name: 'Đồ ăn chính' },
-    { category_id: 'F05', name: 'Đồ ăn chay' },
-    { category_id: 'D01', name: 'Nước ngọt' },
-    { category_id: 'D02', name: 'Nước trái cây' },
-    { category_id: 'D03', name: 'Sữa' },
-    { category_id: 'D04', name: 'Trà sữa' },
-    { category_id: 'D05', name: 'Đồ uống có cồn' },
-    { category_id: 'D06', name: 'Nước khoáng' },
-    { category_id: 'D07', name: 'Cà phê' }
-];
+import getCategories from '@/app/api/user/categories/getCategories';
+import { filterByCategories } from '@/common/utils/categoriesFilter';
+import { filterByPriceRange } from '@/common/utils/priceFilter';
+import { filterByName } from '@/common/utils/filterByName';
 
 const ProductsListManage: React.FC = () => {
     const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
     const [priceRange, setPriceRange] = useState<number[]>([0, 1000000]);
     const [filteredProductData, setFilteredProductData] = useState<ProductProps[]>([]);
+    const [searchText, setSearchText] = useState<string>('');
     const [currentPage, setCurrentPage] = useState(1);
     const productsPerPage = 10;
     const [editProduct, setEditProduct] = useState<ProductProps | null>(null);
     const [addProduct, setAddProduct] = useState<ProductProps | null>(null);
     const [productToDelete, setProductToDelete] = useState<ProductProps | null>(null);
+    const [categoriesList, setCategoriesList] = useState<Category[]>([]);
+    const [deleteProductModalOpen, setDeleteProductModalOpen] = useState<boolean>(false);
 
     const handlePageChange = (pageNumber: number) => {
         setCurrentPage(pageNumber);
@@ -44,11 +35,27 @@ const ProductsListManage: React.FC = () => {
 
     useEffect(() => {
         fetchData();
-    }, [selectedCategories, priceRange]);
+    }, [selectedCategories, priceRange, searchText]);
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const allCategories = await getCategories();
+                setCategoriesList(allCategories);
+            } catch (err: any) {
+                console.log(err);
+            }
+        };
+
+        fetchCategories();
+    }, []);
 
     const fetchData = async () => {
-        const products = await getProducts(selectedCategories, priceRange);
-        setFilteredProductData(products);
+        const products = await getProducts();
+        const filteredByCategory = filterByCategories(products, selectedCategories);
+        const filteredByPrice = filterByPriceRange(filteredByCategory, priceRange);
+        const filteredByName = filterByName(filteredByPrice, searchText);
+        setFilteredProductData(filteredByName);
     };
 
     const totalPages = Math.ceil(filteredProductData.length / productsPerPage);
@@ -64,10 +71,13 @@ const ProductsListManage: React.FC = () => {
         setPriceRange(priceRange);
     };
 
+    const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchText(event.target.value);
+    };
+
     const handleUpdateProduct = async (event: React.FormEvent) => {
         event.preventDefault();
         if (editProduct) {
-            
             if (!editProduct.product_id) {
                 console.error('Product ID is missing in editProduct');
                 return;
@@ -77,9 +87,8 @@ const ProductsListManage: React.FC = () => {
                 if (updatedProduct) {
                     const category = categoriesList.find(cat => cat.category_id === updatedProduct.category_id);
                     if (category) {
-                        updatedProduct.category_name = category.name; 
+                        updatedProduct.category_name = category.name;
                     }
-    
                     setFilteredProductData(prevProducts =>
                         prevProducts.map(product =>
                             product.product_id === updatedProduct.product_id ? updatedProduct : product
@@ -95,7 +104,6 @@ const ProductsListManage: React.FC = () => {
             console.error('editProduct is null or undefined');
         }
     };
-    
 
     const handleEditClick = (product: ProductProps) => {
         setEditProduct(product);
@@ -108,7 +116,6 @@ const ProductsListManage: React.FC = () => {
     const handleAddProduct = async (event: React.FormEvent) => {
         event.preventDefault();
         if (addProduct) {
-            // console.log('Adding product:', addProduct);
             try {
                 const newProduct = await addProductAPI(addProduct);
                 if (newProduct) {
@@ -116,7 +123,6 @@ const ProductsListManage: React.FC = () => {
                     if (category) {
                         newProduct.category_name = category.name;
                     }
-    
                     setFilteredProductData(prevProducts => [...prevProducts, newProduct]);
                     console.log('Product added:', newProduct);
                     setAddProduct(null);
@@ -131,8 +137,6 @@ const ProductsListManage: React.FC = () => {
         }
     };
 
-    const [deleteProductModalOpen, setDeleteProductModalOpen] = useState<boolean>(false);
-
     const handleDeleteClick = (product: ProductProps) => {
         setProductToDelete(product);
         setDeleteProductModalOpen(true);
@@ -141,7 +145,7 @@ const ProductsListManage: React.FC = () => {
     const handleDeleteConfirm = async (event: React.FormEvent) => {
         event.preventDefault();
         if (productToDelete) {
-            if(!productToDelete.product_id) {
+            if (!productToDelete.product_id) {
                 console.error("Product ID is missing in productToDelete");
                 return;
             }
@@ -169,8 +173,17 @@ const ProductsListManage: React.FC = () => {
                     <h4 className={styles['title']}>Quản lý sản phẩm</h4>
                     <div className={styles['actions']}>
                         <div className={styles['search-form']}>
-                            <input className={styles['search-text']} type='text' name='search' placeholder='Nhập tên sản phẩm' />
-                            <i className={`${styles['bi']} ${styles['bi-search']} ${styles['search-btn']} ${'bi-search'}`}></i>
+                            <input 
+                                className={styles['search-text']} 
+                                type='text' 
+                                name='search' 
+                                placeholder='Nhập tên sản phẩm'
+                                value={searchText}
+                                onChange={handleSearchChange}
+                            />
+                            <i 
+                                className={`${styles['bi']} ${styles['bi-search']} ${styles['search-btn']} ${'bi-search'}`}
+                            ></i>
                         </div>
                         <button className={styles['add-product']} onClick={handleAddProductClick}>Thêm sản phẩm</button>
                     </div>

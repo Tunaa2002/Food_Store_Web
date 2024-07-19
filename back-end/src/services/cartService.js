@@ -93,6 +93,28 @@ class cartService {
         });
     }
 
+    async getCartItemsByCartId(cartId) {
+        return new Promise(async (resolve, reject) => {
+            const pool = ConnectionDB.getPool();
+            const client = await pool.connect();
+
+            const query = `
+                SELECT * FROM CartItems
+                WHERE cart_id = $1;
+            `;
+            const values = [cartId];
+
+            try {
+                const result = await client.query(query, values);
+                resolve(result.rows);
+            } catch (error) {
+                reject(error);
+            } finally {
+                client.release();
+            }
+        });
+    }
+
     async getCartByUserId(userId) {
         return new Promise(async (resolve, reject) => {
             const pool = ConnectionDB.getPool();
@@ -140,6 +162,30 @@ class cartService {
                 RETURNING *;
             `;
             const values = [cartId, productId];
+
+            try {
+                const result = await client.query(query, values);
+                resolve(result.rows[0]);
+            } catch (error) {
+                reject(error);
+            } finally {
+                client.release();
+            }
+        });
+    }
+
+    async updateCartItemQuantity(cartId, item) {
+        return new Promise(async (resolve, reject) => {
+            const pool = ConnectionDB.getPool();
+            const client = await pool.connect();
+
+            const query = `
+                UPDATE CartItems
+                SET quantity = $1
+                WHERE cart_id = $2 AND product_id = $3
+                RETURNING *;
+            `;
+            const values = [item.quantity, cartId, item.product_id];
 
             try {
                 const result = await client.query(query, values);
