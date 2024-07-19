@@ -1,7 +1,6 @@
 'use client'
 
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import styles from './foods.module.css';
 import container from '@/common/styles/style.module.css';
 import Product1 from '@/components/product1/product1';
@@ -15,8 +14,6 @@ import { getFoods } from '../api/user/products/getProducts';
 
 function Foods() {
     const [productData, setProductData] = useState<ProductProps[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null)
     const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
     const [priceRange, setPriceRange] = useState<number[]>([0, 1000000]);
     const [filteredProductData, setFilteredProductData] = useState<ProductProps[]>([]);
@@ -28,10 +25,8 @@ function Foods() {
                 const foodsData = await getFoods()
                 setProductData(foodsData);
                 setFilteredProductData(foodsData);
-                setLoading(false);
             } catch (err: any) {
-                setError(err.message);
-                setLoading(false);
+                console.log(err);
             }
         };
 
@@ -45,7 +40,7 @@ function Foods() {
                 const foodCategories = allCategories.filter(category => category.category_id.startsWith('F'));
                 setCategoriesList(foodCategories);
             } catch (err: any) {
-                setError(err.message);
+                console.log(err);
             }
         };
 
@@ -72,14 +67,6 @@ function Foods() {
     const handlePriceChange = (priceRange: number[]) => {
         setPriceRange(priceRange);
     };
-
-    if (loading) {
-        return <p>Loading...</p>;
-    }
-
-    if (error) {
-        return <p>Error: {error}</p>;
-    }
 
     return (
         <div className={styles['food-main']}>

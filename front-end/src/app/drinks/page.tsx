@@ -6,7 +6,6 @@ import container from '@/common/styles/style.module.css';
 import Product1 from '@/components/product1/product1';
 import FilterOption from '@/components/filter-option/filterOption';
 import ProductProps from '@/common/interfaces/productProps';
-import axios from 'axios';
 import { filterByCategories } from '@/common/utils/categoriesFilter';
 import { filterByPriceRange } from '@/common/utils/priceFilter';
 import Category from '@/common/interfaces/categories';
@@ -16,8 +15,6 @@ import { getDrinks } from '../api/user/products/getProducts';
 function Drinks() {
     const [productData, setProductData] = useState<ProductProps[]>([]);
     const [filteredProductData, setFilteredProductData] = useState<ProductProps[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
     const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
     const [priceRange, setPriceRange] = useState<number[]>([0, 1000000]);
     const [categoriesList, setCategoriesList] = useState<Category[]>([]);
@@ -28,10 +25,8 @@ function Drinks() {
                 const drinksData = await getDrinks()
                 setProductData(drinksData);
                 setFilteredProductData(drinksData);
-                setLoading(false);
             } catch (err: any) {
-                setError(err.message);
-                setLoading(false);
+                console.log(err);
             }
         };
 
@@ -45,7 +40,7 @@ function Drinks() {
                 const foodCategories = allCategories.filter(category => category.category_id.startsWith('D') || category.category_id.startsWith('D'));
                 setCategoriesList(foodCategories);
             } catch (err: any) {
-                setError(err.message);
+                console.log(err);
             }
         };
 
@@ -73,14 +68,6 @@ function Drinks() {
     const handlePriceChange = (priceRange: number[]) => {
         setPriceRange(priceRange);
     };
-
-    if (loading) {
-        return <p>Loading...</p>;
-    }
-
-    if (error) {
-        return <p>Error: {error}</p>;
-    }
 
     return (
         <div className={styles['drink-main']}>
