@@ -7,10 +7,17 @@ class productsService {
             const client = await pool.connect();
             try {
                 const query = `
-                    SELECT *
-                    FROM Products
-                    WHERE CAST(category_id AS VARCHAR) LIKE 'F%';
+                    SELECT 
+                        p.*, 
+                        COALESCE(AVG(r.rating), 0) AS rate_avg
+                    FROM Products p
+                    LEFT JOIN Ratings r ON p.product_id = r.product_id
+                    WHERE CAST(p.category_id AS VARCHAR) LIKE 'F%'
+                    GROUP BY 
+                        p.product_id, p.image_url, p.name, p.category_id, 
+                        p.description, p.cost, p.discount, p.quantity
                 `;
+
                 const result = await client.query(query);
     
                 resolve(result.rows);
@@ -28,9 +35,15 @@ class productsService {
             const client = await pool.connect();
             try {
                 const query = `
-                    SELECT *
-                    FROM Products
-                    WHERE CAST(category_id AS VARCHAR) LIKE 'D%';
+                    SELECT 
+                        p.*, 
+                        COALESCE(AVG(r.rating), 0) AS rate_avg
+                    FROM Products p
+                    LEFT JOIN Ratings r ON p.product_id = r.product_id
+                    WHERE CAST(p.category_id AS VARCHAR) LIKE 'D%'
+                    GROUP BY 
+                        p.product_id, p.image_url, p.name, p.category_id, 
+                        p.description, p.cost, p.discount, p.quantity
                 `;
                 const result = await client.query(query);
     

@@ -7,10 +7,16 @@ class productsListService {
             const client = await pool.connect();
             try {
                 const query = `
-                    SELECT p.product_id, p.image_url, p.name, p.category_id, p.description, p.cost, p.discount, p.rate_avg, c.name AS category_name, p.quantity
-                    FROM Products p
-                    JOIN Categories c ON p.category_id = c.category_id
-                `;
+                SELECT 
+                    p.product_id, p.image_url, p.name, p.category_id, p.description, p.cost, p.discount, p.quantity,
+                    c.name AS category_name, 
+                    COALESCE(AVG(r.rating), 0) AS rate_avg
+                FROM Products p
+                JOIN Categories c ON p.category_id = c.category_id
+                LEFT JOIN Ratings r ON p.product_id = r.product_id
+                GROUP BY 
+                    p.product_id, p.image_url, p.name, p.category_id, p.description, p.cost, p.discount, c.name, p.quantity
+            `;
                 const result = await client.query(query);
     
                 resolve(result.rows);

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import styles from './profile.module.css';
-import { fetchProfile, updateProfile } from '@/services/profileService';
+import { fetchProfile, updateProfile } from '@/app/api/user/profile/profile';
 
 function Profile() {
     const [user, setUser] = useState({
