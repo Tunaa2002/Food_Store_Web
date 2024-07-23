@@ -5,7 +5,7 @@ const normalizeString = (str: string) => {
     return str.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "");
 };
 
-export const filterByName = (products: ProductProps[], searchText: string): ProductProps[] => {
+export const filterProductByName = (products: ProductProps[], searchText: string): ProductProps[] => {
     const normalizedSearchText = normalizeString(searchText);
     return products.filter(product =>
         normalizeString(product.name).includes(normalizedSearchText)

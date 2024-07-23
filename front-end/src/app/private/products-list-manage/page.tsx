@@ -14,7 +14,7 @@ import deleteProduct from '@/app/api/admin/products/deleteProduct';
 import getCategories from '@/app/api/user/categories/getCategories';
 import { filterByCategories } from '@/common/utils/categoriesFilter';
 import { filterByPriceRange } from '@/common/utils/priceFilter';
-import { filterByName } from '@/common/utils/filterByName';
+import { filterProductByName } from '@/common/utils/filterProductByName';
 
 const ProductsListManage: React.FC = () => {
     const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
@@ -54,7 +54,7 @@ const ProductsListManage: React.FC = () => {
         const products = await getProducts();
         const filteredByCategory = filterByCategories(products, selectedCategories);
         const filteredByPrice = filterByPriceRange(filteredByCategory, priceRange);
-        const filteredByName = filterByName(filteredByPrice, searchText);
+        const filteredByName = filterProductByName(filteredByPrice, searchText);
         setFilteredProductData(filteredByName);
     };
 
