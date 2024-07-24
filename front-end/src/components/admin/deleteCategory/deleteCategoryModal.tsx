@@ -19,7 +19,7 @@ const DeleteCategoryModal: React.FC<DeleteCategoryModalProps> = ({ category, onC
             <div className={styles['modal-content']}>
                 <span className={styles['close']} onClick={onClose}>&times;</span>
                 <h2>Xác nhận xóa</h2>
-                <p>Bạn có chắc chắn xóa {category.name} không?</p>
+                <p>Bạn có chắc chắn muốn xóa "{category.name}"?</p>
                 <button className={styles['delete-btn']} onClick={handleDeleteClick}>Xác nhận</button>
                 <button className={styles['cancel-btn']} onClick={onClose}>Hủy</button>
             </div>

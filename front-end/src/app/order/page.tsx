@@ -1,4 +1,4 @@
-'use client';
+'use client'
 
 import styles from './order.module.css';
 import { useCart } from '@/common/contexts/cartContext';
@@ -7,7 +7,7 @@ import { useState } from 'react';
 import createOrderAPI from '../api/user/order/createOrder';
 
 function Order() {
-    const { cartItems, totalPrice } = useCart();
+    const { cartItems, totalPrice, updateCartCount } = useCart(); // Lấy hàm updateCartCount từ context
     const [address, setAddress] = useState('');
     const [phone, setPhone] = useState('');
     const [paymentMethod, setPaymentMethod] = useState('cash');
@@ -37,7 +37,12 @@ function Order() {
 
         try {
             await createOrderAPI(orderData);
+
+            localStorage.removeItem('cart');
+            updateCartCount();
+
             alert('Đặt hàng thành công!');
+            window.location.href = "/";
         } catch (error) {
             setError('Đã xảy ra lỗi khi đặt hàng. Vui lòng thử lại sau.');
         }

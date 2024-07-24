@@ -110,6 +110,28 @@ class orderService {
             }
         });
     }
+    async updateProductStock(cartItems) {
+        return new Promise(async (resolve, reject) => {
+            const pool = ConnectionDB.getPool();
+            const client = await pool.connect();
+            try {
+                for (const item of cartItems) {
+                    const query = `
+                        UPDATE Products
+                        SET quantity = quantity - $1
+                        WHERE product_id = $2;
+                    `;
+                    const values = [item.quantity, item.product_id];
+                    await client.query(query, values);
+                }
+                resolve(true);
+            } catch (error) {
+                reject(error);
+            } finally {
+                client.release();
+            }
+        });
+    }
 }
 
 const OrderService = new orderService();

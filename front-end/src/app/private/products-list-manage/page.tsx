@@ -339,6 +339,7 @@ const ProductsListManage: React.FC = () => {
             {deleteProductModalOpen && (
                 <div className={styles['delete-modal']}>
                     <div className={styles['delete-modal-content']}>
+                    <span className={styles['close']} onClick={() => setDeleteProductModalOpen(false)}>&times;</span>
                         <h2>Xác nhận xóa sản phẩm</h2>
                         <p>Bạn có chắc chắn muốn xóa sản phẩm "{productToDelete?.name}"?</p>
                         <div className={styles['modal-actions']}>

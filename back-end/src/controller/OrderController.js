@@ -7,26 +7,41 @@ class orderController {
 
         try {
             // Kiểm tra số lượng tồn kho của từng sản phẩm
-            await OrderService.checkProductStock(cartItems);
+            const stockCheck = await OrderService.checkProductStock(cartItems);
+            if (!stockCheck) {
+                throw new Error('Insufficient stock for one or more products');
+            }
 
             // Tạo đơn hàng
             const order = await OrderService.createOrder({ user_id, address, phone, payment_id, totalPrice });
+            if (!order) {
+                throw new Error('Failed to create order');
+            }
             const order_id = order.order_id;
 
             // Tạo chi tiết đơn hàng
             for (const item of cartItems) {
-                await OrderService.createOrderDetail({
+                const orderDetail = await OrderService.createOrderDetail({
                     order_id: order_id,
                     product_id: item.product_id,
                     quantity: item.quantity,
                     price: item.discount * item.quantity
                 });
+                if (!orderDetail) {
+                    throw new Error(`Failed to create order detail for product ID ${item.product_id}`);
+                }
+            }
+
+            // Cập nhật số lượng sản phẩm
+            const stockUpdate = await OrderService.updateProductStock(cartItems);
+            if (!stockUpdate) {
+                throw new Error('Failed to update product stock');
             }
 
             res.status(201).json({ message: 'Order created successfully', order });
         } catch (error) {
             console.error(error);
-            res.status(400).json({ message: error });
+            res.status(400).json({ message: error.message || error });
         }
     }
 

@@ -31,9 +31,11 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     let cart = JSON.parse(localStorage.getItem('cart') || '[]');
     const productIndex = cart.findIndex((cartItem: any) => cartItem.product_id === item.product_id);
     if (productIndex !== -1) {
-      cart[productIndex].quantity += 1;
+      if (cart[productIndex].quantity < cart[productIndex].maxQuantity) {
+        cart[productIndex].quantity += 1;
+      }
     } else {
-      cart.push({ ...item, quantity: 1 });
+      cart.push({ ...item, quantity: 1, maxQuantity: item.quantity });
     }
     localStorage.setItem('cart', JSON.stringify(cart));
     updateCartCount();
@@ -46,9 +48,9 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     cart = cart.filter((_: any, i: number) => i !== index);
     if (cart.length === 0) {
-        localStorage.removeItem('cart');
+      localStorage.removeItem('cart');
     } else {
-        localStorage.setItem('cart', JSON.stringify(cart));
+      localStorage.setItem('cart', JSON.stringify(cart));
     }
     updateCartCount();
     setCartItems(cart);
@@ -69,45 +71,66 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const updateItemQuantity = (index: number, delta: number) => {
     let cart = JSON.parse(localStorage.getItem('cart') || '[]');
-    const newQuantity = cart[index].quantity + delta;
-    if (newQuantity >= 1) {
+    let newQuantity = cart[index].quantity + delta;
+
+    // Kiểm tra giới hạn số lượng
+    if (newQuantity >= 1 && newQuantity <= cart[index].maxQuantity) {
       cart[index].quantity = newQuantity;
-      localStorage.setItem('cart', JSON.stringify(cart));
-      updateCartCount();
+    } else if (newQuantity < 1) {
+      cart[index].quantity = 1;
+    } else if (newQuantity > cart[index].maxQuantity) {
+      cart[index].quantity = cart[index].maxQuantity;
     }
+
+    localStorage.setItem('cart', JSON.stringify(cart));
+    updateCartCount();
   };
 
   const syncCart = async () => {
     const token = localStorage.getItem('user');
     if (!token) return;
-  
+
     const { accessToken, expiry } = JSON.parse(token);
     if (new Date().getTime() >= expiry) {
       localStorage.removeItem('user');
       return;
     }
-  
+
     if (accessToken) {
       const localCartItems = JSON.parse(localStorage.getItem('cart') || '[]');
       try {
         await mergeCart(accessToken, localCartItems);
         const serverCart = await getCurrentCart(accessToken);
 
-        localStorage.setItem('cart', JSON.stringify(serverCart.cartItems));
-        setCartItems(serverCart.cartItems);
-        calculateTotalPrice(serverCart.cartItems);
-        setCartCount(serverCart.cartItems.length);
+        const mergedCart = mergeCartItems(localCartItems, serverCart.cartItems);
+        localStorage.setItem('cart', JSON.stringify(mergedCart));
+        setCartItems(mergedCart);
+        calculateTotalPrice(mergedCart);
+        setCartCount(mergedCart.length);
       } catch (error) {
         console.error('Failed to sync cart:', error);
       }
     }
   };
 
-  useEffect(() => {
-    updateCartCount();
-  }, []);
+  const mergeCartItems = (localCart: any[], serverCart: any[]) => {
+    const mergedCart = [...serverCart];
+
+    localCart.forEach(localItem => {
+      const existingIndex = mergedCart.findIndex(item => item.product_id === localItem.product_id);
+      if (existingIndex !== -1) {
+        // Nếu sản phẩm đã tồn tại trên server, chọn số lượng lớn nhất giữa local và server
+        mergedCart[existingIndex].quantity = Math.max(mergedCart[existingIndex].quantity, localItem.quantity);
+      } else {
+        mergedCart.push(localItem);
+      }
+    });
+
+    return mergedCart;
+  };
 
   useEffect(() => {
+    updateCartCount();
     syncCart();
     const interval = setInterval(syncCart, 5 * 60 * 1000);
     return () => clearInterval(interval);
