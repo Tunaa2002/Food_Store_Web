@@ -7,6 +7,7 @@ import ProductsController from '../controller/ProductsController.js';
 import VerifyAdmin from '../middleware/VerifyAdmin.js';
 import CategoriesController from '../controller/CategoriesController.js';
 import CartController from '../controller/CartController.js';
+import OrderController from '../controller/OrderController.js';
 
 
 const router = express.Router();
@@ -22,6 +23,8 @@ router.delete('/delete-product/:product_id', VerifyAdmin, (req, res) => Products
 router.post('/add-category', VerifyAdmin, (req, res) => CategoriesController.addCategory(req, res));
 router.delete('/delete-category/:category_id',VerifyAdmin,(req, res) => CategoriesController.deleteCategory(req, res));
 router.put('/update-category/:category_id', VerifyAdmin, (req, res) => CategoriesController.updateCategory(req, res));
+router.get('/orders-list', VerifyAdmin, (req, res) => OrderController.getOrdersByUserId(req, res));
+router.get('/order-detail/:order_id',VerifyAdmin, (req, res) => OrderController.getOrderDetail(req, res));
 
 router.get('/foods',(req, res) => ProductsController.getFoods(req, res));
 router.get('/drinks',(req, res) => ProductsController.getDrinks(req, res));
@@ -33,6 +36,7 @@ router.post('/verify-token', AuthenToken, (req, res) => AccountController.Verify
 router.get('/current-cart', AuthenToken, (req, res) => CartController.getCurrentCart(req, res));
 router.post('/merge-cart', AuthenToken, (req, res) => CartController.mergeCart(req, res));
 router.post('/remove-cart-item', AuthenToken, (req, res) => CartController.removeCartItem(req, res));
+router.post('/create-order', AuthenToken, (req, res) => OrderController.createOrder(req, res));
 
 
 export default router;

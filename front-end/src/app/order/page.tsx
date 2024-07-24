@@ -4,7 +4,7 @@ import styles from './order.module.css';
 import { useCart } from '@/common/contexts/cartContext';
 import { formatCurrency } from '@/common/utils/priceFormat';
 import { useState } from 'react';
-import { TextField } from '@mui/material';
+import createOrderAPI from '../api/user/order/createOrder';
 
 function Order() {
     const { cartItems, totalPrice } = useCart();
@@ -15,7 +15,7 @@ function Order() {
     const [cardHolderName, setCardHolderName] = useState('');
     const [error, setError] = useState('');
 
-    const handleOrder = () => {
+    const handleOrder = async () => {
         if (!address || !phone || (paymentMethod === 'credit' && (!cardNumber || !cardHolderName))) {
             setError('Vui lòng điền tất cả các trường bắt buộc!');
             return;
@@ -23,11 +23,24 @@ function Order() {
 
         const cardNumberPattern = /^\d{4}-\d{4}-\d{4}-\d{4}$/;
         if (paymentMethod === 'credit' && !cardNumberPattern.test(cardNumber)) {
-            setError('Số thẻ tín dụng phải theo định dạng xxxx-xxxx-xxxx-xxxx (12 số)!');
+            setError('Số thẻ tín dụng phải theo định dạng xxxx-xxxx-xxxx-xxxx (16 số)!');
             return;
         }
 
-        alert('Đặt hàng thành công!');
+        const orderData = {
+            address,
+            phone,
+            payment_id: paymentMethod === 'cash' ? 'cash' : 'credit',
+            cartItems,
+            totalPrice,
+        };
+
+        try {
+            await createOrderAPI(orderData);
+            alert('Đặt hàng thành công!');
+        } catch (error) {
+            setError('Đã xảy ra lỗi khi đặt hàng. Vui lòng thử lại sau.');
+        }
     };
 
     return (
