@@ -6,19 +6,20 @@ import Box from '@mui/material/Box';
 import StarIcon from '@mui/icons-material/Star';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
+import { format } from 'date-fns';
 
 const labels: { [index: string]: string } = {
-    0: 'Awful',
-    0.5: 'Useless',
-    1: 'Useless+',
-    1.5: 'Poor',
-    2: 'Poor+',
-    2.5: 'Ok',
-    3: 'Ok+',
-    3.5: 'Good',
-    4: 'Good+',
-    4.5: 'Excellent',
-    5: 'Excellent+',
+  0: 'Awful',
+  0.5: 'Useless',
+  1: 'Useless+',
+  1.5: 'Poor',
+  2: 'Poor+',
+  2.5: 'Ok',
+  3: 'Ok+',
+  3.5: 'Good',
+  4: 'Good+',
+  4.5: 'Excellent',
+  5: 'Excellent+',
 };
 
 function getLabelText(value: number) {
@@ -28,9 +29,10 @@ function getLabelText(value: number) {
 interface Review {
   rating: number;
   content: string;
+  created_at: string;
 }
 
-export default function HoverRating() {
+function UserRating() {
   const [value, setValue] = React.useState<number | null>(5);
   const [hover, setHover] = React.useState(-1);
   const [showInput, setShowInput] = React.useState(false);
@@ -39,7 +41,12 @@ export default function HoverRating() {
 
   const handleConfirmReview = () => {
     if (value !== null && reviewContent.trim() !== '') {
-      setReviews([...reviews, { rating: value, content: reviewContent }]);
+      const newReview: Review = {
+        rating: value,
+        content: reviewContent,
+        created_at: format(new Date(), 'dd/MM/yyyy HH:mm')
+      };
+      setReviews([...reviews, newReview]);
       setReviewContent('');
       setShowInput(false);
     }
@@ -48,10 +55,10 @@ export default function HoverRating() {
   return (
     <Box
       sx={{
-        width: 200,
+        width: '100%', 
         display: 'flex',
         flexDirection: 'column',
-        alignItems: 'center',
+        alignItems: 'flex-start',
       }}
     >
       <Rating
@@ -93,8 +100,11 @@ export default function HoverRating() {
       )}
       <Box sx={{ mt: 2, width: '100%' }}>
         {reviews.map((review, index) => (
-          <Box key={index} sx={{ mt: 2, p: 2, border: '1px solid #ddd', borderRadius: '4px' }}>
+          <Box key={index} sx={{ mt: 2, p: 2, border: '1px solid #ddd', borderRadius: '4px', width: '100%' }}>
             <Rating value={review.rating} readOnly precision={0.5} />
+            <Box sx={{ mt: 1, fontSize: '0.875em', color: 'gray' }}>
+              {review.created_at}
+            </Box>
             <Box sx={{ mt: 1 }}>{review.content}</Box>
           </Box>
         ))}
@@ -102,3 +112,5 @@ export default function HoverRating() {
     </Box>
   );
 }
+
+export default UserRating;

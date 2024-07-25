@@ -3,7 +3,7 @@
 
 import styles from './productDetail.module.css';
 import { useEffect, useState } from 'react';
-import HoverRating from '@/components/rating/rating';
+import UserRating from '@/components/rating/rating';
 // import DefaultComponent from '@/components/comment/comment';
 import ProductProps from '@/common/interfaces/productProps';
 import { formatPrice } from '@/common/utils/formatPrice';
@@ -110,7 +110,7 @@ function ProductDetail() {
                 </div>
                 <div className={styles['user-rating']}>
                     <h3 className={styles['title']}>Đánh giá sản phẩm</h3>
-                    <HoverRating />
+                    <UserRating />
                 </div>
                 {/* <div className={styles['comments']}>
                     <DefaultComponent />

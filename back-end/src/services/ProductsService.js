@@ -9,7 +9,7 @@ class productsService {
                 const query = `
                     SELECT 
                         p.*, 
-                        COALESCE(AVG(r.rating), 0) AS rate_avg
+                        ROUND(COALESCE(AVG(r.rating), 0), 1) AS rate_avg
                     FROM Products p
                     LEFT JOIN Ratings r ON p.product_id = r.product_id
                     WHERE CAST(p.category_id AS VARCHAR) LIKE 'F%'
@@ -17,7 +17,6 @@ class productsService {
                         p.product_id, p.image_url, p.name, p.category_id, 
                         p.description, p.cost, p.discount, p.quantity
                 `;
-
                 const result = await client.query(query);
     
                 resolve(result.rows);
@@ -37,7 +36,7 @@ class productsService {
                 const query = `
                     SELECT 
                         p.*, 
-                        COALESCE(AVG(r.rating), 0) AS rate_avg
+                        ROUND(COALESCE(AVG(r.rating), 0), 1) AS rate_avg
                     FROM Products p
                     LEFT JOIN Ratings r ON p.product_id = r.product_id
                     WHERE CAST(p.category_id AS VARCHAR) LIKE 'D%'
@@ -62,8 +61,15 @@ class productsService {
             const client = await pool.connect();
             try {
                 const query = `
-                    SELECT * FROM Products
-                    WHERE product_id = $1;
+                    SELECT 
+                        p.*, 
+                        ROUND(COALESCE(AVG(r.rating), 0), 1) AS rate_avg
+                    FROM Products p
+                    LEFT JOIN Ratings r ON p.product_id = r.product_id
+                    WHERE p.product_id = $1
+                    GROUP BY 
+                        p.product_id, p.image_url, p.name, p.category_id, 
+                        p.description, p.cost, p.discount, p.quantity
                 `;
                 const values = [product_id];
                 const result = await client.query(query, values);
@@ -73,7 +79,7 @@ class productsService {
             } finally {
                 client.release();
             }
-        })
+        });
     }
 
 }

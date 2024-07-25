@@ -9,7 +9,7 @@ import CategoriesController from '../controller/categoriesController.js';
 import CartController from '../controller/cartController.js';
 import OrderController from '../controller/OrderController.js';
 import VNPAYController from '../controller/vnpayController.js';
-
+import RatingController from '../controller/ratingController.js';
 
 const router = express.Router();
 
@@ -43,5 +43,7 @@ router.post('/remove-cart-item', AuthenToken, (req, res) => CartController.remov
 router.post('/create-order', AuthenToken, (req, res) => OrderController.createOrder(req, res));
 router.post('/create-payment-url', AuthenToken, (req, res) => VNPAYController.createPaymentUrl(req, res));
 router.get('/payment-return', AuthenToken, (req, res) => VNPAYController.handlePaymentReturn(req, res));
+router.post('/create-rating', AuthenToken, (req, res) => RatingController.createRating(req, res));
+router.get('/get-rating/:product_id', AuthenToken, (req, res) => RatingController.getRating(req, res));
 
 export default router;

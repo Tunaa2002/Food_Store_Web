@@ -5,6 +5,7 @@ import Link from 'next/link';
 import ProductProps from '@/common/interfaces/productProps';
 import { useCart } from '@/common/contexts/cartContext';
 import { formatPrice } from '@/common/utils/formatPrice';
+import formatRate from '@/common/utils/formatRate';
 
 
 const Product1: React.FC<ProductProps> = ({ image_url, product_id, name, description, discount, cost, rate_avg, quantity }) => {
