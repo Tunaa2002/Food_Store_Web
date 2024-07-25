@@ -1,7 +1,7 @@
 import axios from "axios";
 import OrderDetailData from "@/common/interfaces/orderDetail";
 
-const getOrderDetailAPI = async (order_id: string): Promise<OrderDetailData[]> => {
+const getOrderDetailAPI = async (order_id: number): Promise<OrderDetailData[]> => {
     const token = localStorage.getItem('user');
     if (token) {
         const { accessToken, expiry } = JSON.parse(token);

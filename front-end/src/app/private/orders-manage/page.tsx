@@ -7,6 +7,9 @@ import updateOrderStatus from '@/app/api/admin/orders/updateOrder';
 import OrderData from '@/common/interfaces/orderData';
 import { filterOrderByName } from '@/common/utils/filterByName';
 import { formatPrice } from '@/common/utils/formatPrice';
+import OrderDetailModal from '@/components/admin/orderDetail/orderDetailModal';
+import getOrderDetailAPI from '@/app/api/admin/orders/getOrderDetail';
+import OrderDetailData from '@/common/interfaces/orderDetail';
 
 function OrdersManage() {
     const [orders, setOrders] = useState<OrderData[]>([]);
@@ -15,6 +18,8 @@ function OrdersManage() {
     const [currentPage, setCurrentPage] = useState(1);
     const [editingOrderId, setEditingOrderId] = useState<number | null>(null);
     const [editingOrderStatus, setEditingOrderStatus] = useState<string>('');
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [orderDetails, setOrderDetails] = useState<OrderDetailData[]>([]);
     const ordersPerPage = 10;
 
     useEffect(() => {
@@ -63,6 +68,16 @@ function OrdersManage() {
             setEditingOrderId(null);
         } catch (error) {
             console.error('Error updating order status:', error);
+        }
+    };
+
+    const handleViewDetails = async (order_id: number) => {
+        try {
+            const details = await getOrderDetailAPI(order_id);
+            setOrderDetails(details);
+            setIsModalOpen(true);
+        } catch (error) {
+            console.error('Error fetching order details:', error);
         }
     };
 
@@ -146,7 +161,7 @@ function OrdersManage() {
                                         ) : (
                                             <button className={styles['btn-update-order']} onClick={() => handleEditStatus(order.order_id, order.status)}>Cập nhật</button>
                                         )}
-                                        <button className={styles['btn-order-detail']}>Xem chi tiết</button>
+                                        <button className={styles['btn-order-detail']} onClick={() => handleViewDetails(order.order_id)}>Xem chi tiết</button>
                                     </td>
                                 </tr>
                             ))}
@@ -169,6 +184,11 @@ function OrdersManage() {
                     </button>
                 </div>
             </div>
+            <OrderDetailModal 
+                isOpen={isModalOpen} 
+                onClose={() => setIsModalOpen(false)} 
+                orderDetails={orderDetails}
+            />
         </div>
     );
 }
