@@ -1,4 +1,4 @@
-import OrderService from "../services/OrderService.js";
+import OrderService from "../services/orderService.js";
 
 class orderController {
     async createOrder(req, res) {
@@ -6,20 +6,20 @@ class orderController {
         const user_id = req.user.user_id;
 
         try {
-            // Kiểm tra số lượng tồn kho của từng sản phẩm
+            // check remaining product quantity
             const stockCheck = await OrderService.checkProductStock(cartItems);
             if (!stockCheck) {
                 throw new Error('Insufficient stock for one or more products');
             }
 
-            // Tạo đơn hàng
+            // create order if enough quantity
             const order = await OrderService.createOrder({ user_id, address, phone, payment_id, totalPrice });
             if (!order) {
                 throw new Error('Failed to create order');
             }
             const order_id = order.order_id;
 
-            // Tạo chi tiết đơn hàng
+            // create order detail when create order success
             for (const item of cartItems) {
                 const orderDetail = await OrderService.createOrderDetail({
                     order_id: order_id,
@@ -32,7 +32,7 @@ class orderController {
                 }
             }
 
-            // Cập nhật số lượng sản phẩm
+            // update p.quantity after order success
             const stockUpdate = await OrderService.updateProductStock(cartItems);
             if (!stockUpdate) {
                 throw new Error('Failed to update product stock');
@@ -45,11 +45,9 @@ class orderController {
         }
     }
 
-    async getOrdersByUserId(req, res) {
-        const user_id = req.user.user_id;
-
+    async getOrders(req, res) {
         try {
-            const orders = await OrderService.getOrdersByUserId(user_id);
+            const orders = await OrderService.getOrders();
             res.json(orders);
         } catch (error) {
             console.error(error);
@@ -62,6 +60,18 @@ class orderController {
         try {
             const orderDetails = await OrderService.getOrderDetail(order_id);
             res.json(orderDetails);
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ message: 'Internal server error' });
+        }
+    }
+
+    async updateOrderStatus(req, res) {
+        const { order_id } = req.params;
+        const { status } = req.body;
+        try {
+            const updatedOrder = await OrderService.updateOrderStatus(order_id, status);
+            res.json(updatedOrder);
         } catch (error) {
             console.error(error);
             res.status(500).json({ message: 'Internal server error' });

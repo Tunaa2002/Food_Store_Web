@@ -1,4 +1,4 @@
-import AccountService from "../services/AccountService.js";
+import AccountService from "../services/accountService.js";
 
 class accountController {
     async SignUp(req, res) {

@@ -4,7 +4,7 @@ import styles from './cart.module.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import Link from 'next/link';
 import { useCart } from '@/common/contexts/cartContext';
-import { formatCurrency } from '@/common/utils/priceFormat';
+import { formatPrice } from '@/common/utils/formatPrice';
 import { useState } from 'react';
 
 const Cart = () => {
@@ -49,7 +49,7 @@ const Cart = () => {
                             </div>
                             <div className={styles['product-content']}>
                                 <h4 className={styles['title']}>{item.name}</h4>
-                                <p className={styles['price']}>{formatCurrency(item.discount)} VNĐ</p>
+                                <p className={styles['price']}>{formatPrice(item.discount)} VNĐ</p>
                                 <div className={styles['quantity-container']}>
                                     <i className="bi bi-dash-circle" onClick={() => updateItemQuantity(index, -1)}></i>
                                     <p>Số lượng: {item.quantity}</p>
@@ -57,7 +57,7 @@ const Cart = () => {
                                 </div>
                                 <Link href={`/product-detail/${item.product_id}`} onClick={() => handleProductClick(item.product_id)}>Chi tiết sản phẩm</Link>
                                 <p className={styles['products-price-total']}>
-                                    Tổng: {formatCurrency(item.discount * item.quantity)} VNĐ
+                                    Tổng: {formatPrice(item.discount * item.quantity)} VNĐ
                                 </p>
                                 <button className={styles['remove-btn']} onClick={() => removeFromCart(index)}>Xóa sản phẩm</button>
                             </div>
@@ -66,7 +66,7 @@ const Cart = () => {
                     <div className={styles['total']}>
                         <div className={styles['total-price']}>
                             Tổng giá trị đơn hàng:
-                            <span className={styles['span']}>{formatCurrency(totalPrice)} VNĐ</span>
+                            <span className={styles['span']}>{formatPrice(totalPrice)} VNĐ</span>
                         </div>
                         <button className={styles['order-btn']} onClick={handleOrder}>Đặt hàng</button>
                     </div>

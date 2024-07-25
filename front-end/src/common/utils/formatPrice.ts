@@ -1,4 +1,4 @@
-export const formatCurrency = (value: number | string): string => {
+export const formatPrice = (value: number | string): string => {
     const numValue = typeof value === 'number' ? value : parseFloat(value);
 
     if (isNaN(numValue)) {

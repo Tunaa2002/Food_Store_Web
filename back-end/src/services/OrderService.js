@@ -1,17 +1,31 @@
 import ConnectionDB from '../config/connectionDB.js';
+import { format, addHours } from 'date-fns';
 
 class orderService {
-    async getOrdersByUserId(user_id) {
+    async getOrders() {
         return new Promise(async (resolve, reject) => {
             const pool = ConnectionDB.getPool();
             const client = await pool.connect();
             const query = `
-                SELECT * FROM Orders
-                WHERE user_id = $1;
+                SELECT o.order_id, u.username, o.total_price, o.status, o.created_at, o.updated_at, p.description AS payment_description, o.address, o.phone_number
+                FROM Orders o
+                JOIN Users u ON o.user_id = u.user_id
+                JOIN Payments p ON o.payment_id = p.payment_id;
             `;
-            const values = [user_id];
             try {
-                const result = await client.query(query, values);
+                const result = await client.query(query);
+
+                result.rows.forEach(order => {
+                    if (order.created_at) {
+                        const createdAtWithTimezone = addHours(new Date(order.created_at), 7);
+                        order.created_at = format(createdAtWithTimezone, 'dd-MM-yyyy');
+                    }
+                    if (order.updated_at) {
+                        const updatedAtWithTimezone = addHours(new Date(order.updated_at), 7);
+                        order.updated_at = format(updatedAtWithTimezone, 'dd-MM-yyyy');
+                    }
+                });
+
                 resolve(result.rows);
             } catch (error) {
                 reject(error);
@@ -26,7 +40,7 @@ class orderService {
             const pool = ConnectionDB.getPool();
             const client = await pool.connect();
             const query = `
-                SELECT od.*, p.name, p.discount, p.image_url 
+                SELECT od.*, p.name, p.discount, p.image_url  
                 FROM OrderDetails od
                 JOIN Products p ON od.product_id = p.product_id
                 WHERE od.order_id = $1;
@@ -85,6 +99,28 @@ class orderService {
         });
     }
 
+    async updateOrderStatus(order_id, status) {
+        return new Promise(async (resolve, reject) => {
+            const pool = ConnectionDB.getPool();
+            const client = await pool.connect();
+            const query = `
+                UPDATE Orders
+                SET status = $1, updated_at = NOW()
+                WHERE order_id = $2
+                RETURNING *;
+            `;
+            const values = [status, order_id];
+            try {
+                const result = await client.query(query, values);
+                resolve(result.rows[0]);
+            } catch (error) {
+                reject(error);
+            } finally {
+                client.release();
+            }
+        });
+    }
+
     async checkProductStock(cartItems) {
         return new Promise(async (resolve, reject) => {
             const pool = ConnectionDB.getPool();
@@ -110,6 +146,7 @@ class orderService {
             }
         });
     }
+
     async updateProductStock(cartItems) {
         return new Promise(async (resolve, reject) => {
             const pool = ConnectionDB.getPool();

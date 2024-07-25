@@ -10,7 +10,7 @@ import DeleteCategoryModal from '@/components/admin/deleteCategory/deleteCategor
 import addCategoryAPI from '@/app/api/admin/categories/addCategory';
 import deleteCategoryAPI from '@/app/api/admin/categories/deleteCategory';
 import updateCategoryAPI from '@/app/api/admin/categories/updateCategory';
-import { filterCategoriesByName } from '@/common/utils/filterCategoryByName';
+import { filterCategoriesByName } from '@/common/utils/filterByName'; 
 
 function CategoriesManage() {
     const [categories, setCategories] = useState<Category[]>([]);
@@ -116,7 +116,7 @@ function CategoriesManage() {
                                 className={styles['search-text']} 
                                 type='text' 
                                 name='search' 
-                                placeholder='Nhập tên sản phẩm'
+                                placeholder='Nhập tên loại sản phẩm'
                                 value={searchText}
                                 onChange={handleSearchChange}
                             />

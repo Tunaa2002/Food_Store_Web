@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import HoverRating from '@/components/rating/rating';
 // import DefaultComponent from '@/components/comment/comment';
 import ProductProps from '@/common/interfaces/productProps';
-import { formatCurrency } from '@/common/utils/priceFormat';
+import { formatPrice } from '@/common/utils/formatPrice';
 import { useCart } from '@/common/contexts/cartContext';
 import getProductDetail from '@/app/api/user/products/getProductDetail';
 
@@ -91,8 +91,8 @@ function ProductDetail() {
                                 <h2 className={styles['h2']}>{product.name}</h2>
                             </div>
                             <div className={styles['price']}>
-                                <span className={`${styles['mr8']} ${styles['discount']}`}>{formatCurrency(product.discount)} VNĐ</span>
-                                <span className={styles['cost']}>{formatCurrency(product.cost)} VNĐ</span>
+                                <span className={`${styles['mr8']} ${styles['discount']}`}>{formatPrice(product.discount)} VNĐ</span>
+                                <span className={styles['cost']}>{formatPrice(product.cost)} VNĐ</span>
                             </div>
                             <div className={styles['rating']}>
                                 <div className={styles['star-icon']}>

@@ -5,7 +5,7 @@ import styles from './productsListManage.module.css';
 import FilterOption from '@/components/filter-option/filterOption';
 import Category from '@/common/interfaces/categories';
 import ProductProps from '@/common/interfaces/productProps';
-import { formatCurrency } from '@/common/utils/priceFormat';
+import { formatPrice } from '@/common/utils/formatPrice';
 import { getProducts } from '@/app/api/user/products/getProducts';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import updateProduct from '@/app/api/admin/products/updateProduct';
@@ -14,7 +14,7 @@ import deleteProduct from '@/app/api/admin/products/deleteProduct';
 import getCategories from '@/app/api/user/categories/getCategories';
 import { filterByCategories } from '@/common/utils/categoriesFilter';
 import { filterByPriceRange } from '@/common/utils/priceFilter';
-import { filterProductByName } from '@/common/utils/filterProductByName';
+import { filterProductByName } from '@/common/utils/filterByName';
 
 const ProductsListManage: React.FC = () => {
     const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
@@ -217,8 +217,8 @@ const ProductsListManage: React.FC = () => {
                                     <td><img src={product.image_url} alt={product.name} className={styles['product-image']} /></td>
                                     <td>{product.name}</td>
                                     <td>{product.description}</td>
-                                    <td>{formatCurrency(product.cost)}</td>
-                                    <td>{formatCurrency(product.discount)}</td>
+                                    <td>{formatPrice(product.cost)}</td>
+                                    <td>{formatPrice(product.discount)}</td>
                                     <td>{product.category_name}</td>
                                     <td>{product.quantity}</td>
                                     <td>

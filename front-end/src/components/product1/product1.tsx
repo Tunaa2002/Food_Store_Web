@@ -4,7 +4,7 @@ import styles from './product1.module.css';
 import Link from 'next/link';
 import ProductProps from '@/common/interfaces/productProps';
 import { useCart } from '@/common/contexts/cartContext';
-import { formatCurrency } from '@/common/utils/priceFormat';
+import { formatPrice } from '@/common/utils/formatPrice';
 
 
 const Product1: React.FC<ProductProps> = ({ image_url, product_id, name, description, discount, cost, rate_avg, quantity }) => {
@@ -69,8 +69,8 @@ const Product1: React.FC<ProductProps> = ({ image_url, product_id, name, descrip
                         <p className={styles['description']}>{description || ''}</p>
                     </div>
                     <div className={styles['price']}>
-                        <span className={`${styles['mr8']} ${styles['discount']}`}>{formatCurrency(discount)} VNĐ</span>
-                        <span className={styles['cost']}>{formatCurrency(cost)} VNĐ</span>
+                        <span className={`${styles['mr8']} ${styles['discount']}`}>{formatPrice(discount)} VNĐ</span>
+                        <span className={styles['cost']}>{formatPrice(cost)} VNĐ</span>
                     </div>
                     <div className={styles['rating']}>
                         <div className={styles['star-icon']}>

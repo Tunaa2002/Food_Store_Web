@@ -1,27 +1,27 @@
 import axios from "axios";
-import CreateOrder from "@/common/interfaces/createOrder";
+import OrderDetailData from "@/common/interfaces/orderDetail";
 
-const createOrderAPI = async (orderData: CreateOrder): Promise<any> => {
+const getOrderDetailAPI = async (order_id: string): Promise<OrderDetailData[]> => {
     const token = localStorage.getItem('user');
     if (token) {
         const { accessToken, expiry } = JSON.parse(token);
 
         if (new Date().getTime() >= expiry) {
             localStorage.removeItem('user');
-            return null;
+            return [];
         }
 
         try {
-            const response = await axios.post('http://localhost:5000/create-order', orderData, {
+            const response = await axios.get(`http://localhost:5000/order-detail/${order_id}`, {
                 headers: { Authorization: `Bearer ${accessToken}` }
             });
             return response.data;
         } catch (error) {
-            console.error('Error creating order:', error);
-            throw error;
+            console.error('Error fetching order detail:', error);
+            return [];
         }
     }
-    return null;
+    return [];
 };
 
-export default createOrderAPI;
+export default getOrderDetailAPI;

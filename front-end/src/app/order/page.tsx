@@ -2,12 +2,12 @@
 
 import styles from './order.module.css';
 import { useCart } from '@/common/contexts/cartContext';
-import { formatCurrency } from '@/common/utils/priceFormat';
+import { formatPrice } from '@/common/utils/formatPrice';
 import { useState } from 'react';
 import createOrderAPI from '../api/user/order/createOrder';
 
 function Order() {
-    const { cartItems, totalPrice, updateCartCount } = useCart(); // Lấy hàm updateCartCount từ context
+    const { cartItems, totalPrice, updateCartCount } = useCart();
     const [address, setAddress] = useState('');
     const [phone, setPhone] = useState('');
     const [paymentMethod, setPaymentMethod] = useState('cash');
@@ -27,7 +27,7 @@ function Order() {
             return;
         }
 
-        const orderData = {
+        const orderData  = {
             address,
             phone,
             payment_id: paymentMethod === 'cash' ? 'cash' : 'credit',
@@ -59,13 +59,13 @@ function Order() {
                         <div key={index} className={styles['cart-item']}>
                             <img src={item.image_url} alt={item.name} className={styles['img']} />
                             <h4>{item.name}</h4>
-                            <p>{formatCurrency(item.discount)} VNĐ x {item.quantity}</p>
-                            <p>Tổng: {formatCurrency(item.discount * item.quantity)} VNĐ</p>
+                            <p>{formatPrice(item.discount)} VNĐ x {item.quantity}</p>
+                            <p>Tổng: {formatPrice(item.discount * item.quantity)} VNĐ</p>
                         </div>
                     ))
                 )}
 
-                <h3>Tổng giá trị đơn hàng: {formatCurrency(totalPrice)} VNĐ</h3>
+                <h3>Tổng giá trị đơn hàng: {formatPrice(totalPrice)} VNĐ</h3>
 
                 <h3>Địa chỉ nhận hàng</h3>
                 <input 
@@ -113,8 +113,8 @@ function Order() {
                             placeholder="xxxx-xxxx-xxxx-xxxx" 
                             value={cardNumber} 
                             onChange={(e) => {
-                                const value = e.target.value.replace(/\D/g, '').slice(0, 16); // chỉ cho phép 12 số
-                                const formattedValue = value.match(/.{1,4}/g)?.join('-') || ''; // định dạng xxxx-xxxx-xxxx-xxxx
+                                const value = e.target.value.replace(/\D/g, '').slice(0, 16);
+                                const formattedValue = value.match(/.{1,4}/g)?.join('-') || '';
                                 setCardNumber(formattedValue);
                             }} 
                             required 

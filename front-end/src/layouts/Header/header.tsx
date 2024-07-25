@@ -7,7 +7,7 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
 import { useUser } from '@/common/contexts/userContext';
 import { useCart } from '@/common/contexts/cartContext';
 import { getProducts } from '@/app/api/user/products/getProducts';
-import { filterProductByName } from '@/common/utils/filterProductByName';
+import { filterProductByName } from '@/common/utils/filterByName';
 import ProductProps from '@/common/interfaces/productProps';
 
 const Header: React.FC = () => {
