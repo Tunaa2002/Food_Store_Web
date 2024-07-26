@@ -137,7 +137,17 @@ const UserRating = ({ product_id, onReviewSubmitted }: { product_id: number, onR
               <Box sx={{ fontSize: '0.875rem', color: 'text.secondary' }}>
                 {review.created_at ? format(new Date(review.created_at), 'dd/MM/yyyy HH:mm') : 'N/A'}
               </Box>
-              <Box component="span" sx={{ fontWeight: 'bold' }}>
+              <Box 
+                component="span" 
+                sx={{
+                  fontWeight: 600,
+                  whiteSpace: 'pre-wrap',
+                  wordWrap: 'break-word',
+                  wordBreak: 'break-all',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                }}
+              >
                 {review.comment}
               </Box>
             </Box>

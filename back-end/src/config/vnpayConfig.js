@@ -1,6 +1,6 @@
 export const vnpayConfig = {
-    vnp_TmnCode: 'YOUR_TERMINAL_ID',
-    vnp_HashSecret: 'YOUR_SECRET_KEY',
+    vnp_TmnCode: 'VZ8ROQT9',
+    vnp_HashSecret: 'VGVNX76XCZBR06THC8EY11JCRX75ZEJX',
     vnp_Url: 'https://sandbox.vnpayment.vn/paymentv2/vpcpay.html',
-    vnp_ReturnUrl: 'http://localhost:3000/api/vnpay_return',
+    vnp_ReturnUrl: 'http://localhost:3000/order/payment',
 };

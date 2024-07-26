@@ -13,17 +13,19 @@ function Order() {
     const [paymentMethod, setPaymentMethod] = useState('cash');
     const [cardNumber, setCardNumber] = useState('');
     const [cardHolderName, setCardHolderName] = useState('');
+    const [cardExpiry, setCardExpiry] = useState('');
     const [error, setError] = useState('');
 
     const handleOrder = async () => {
-        if (!address || !phone || (paymentMethod === 'credit' && (!cardNumber || !cardHolderName))) {
+        if (!address || !phone || (paymentMethod === 'credit' && (!cardNumber || !cardHolderName || !cardExpiry))) {
             setError('Vui lòng điền tất cả các trường bắt buộc!');
             return;
         }
 
         const cardNumberPattern = /^\d{4}-\d{4}-\d{4}-\d{4}$/;
-        if (paymentMethod === 'credit' && !cardNumberPattern.test(cardNumber)) {
-            setError('Số thẻ tín dụng phải theo định dạng xxxx-xxxx-xxxx-xxxx (16 số)!');
+        const cardExpiryPattern = /^(0[1-9]|1[0-2])\/\d{4}$/;
+        if (paymentMethod === 'credit' && (!cardNumberPattern.test(cardNumber) || !cardExpiryPattern.test(cardExpiry))) {
+            setError('Thông tin thẻ tín dụng không hợp lệ!');
             return;
         }
 
@@ -130,6 +132,23 @@ function Order() {
                                     .replace(/\s+/g, ' ')
                                     .toUpperCase()
                                 setCardHolderName(value);
+                            }} 
+                            required 
+                        />
+                        <label>Ngày phát hành (DD/MM)</label>
+                        <input 
+                            type="text" 
+                            placeholder="DD/MM" 
+                            value={cardExpiry} 
+                            onChange={(e) => {
+                                const value = e.target.value.replace(/\D/g, '');
+                                let formattedValue = '';
+                                if (value.length <= 2) {
+                                    formattedValue = value;
+                                } else {
+                                    formattedValue = `${value.slice(0, 2)}/${value.slice(2, 4)}`;
+                                }
+                                setCardExpiry(formattedValue);
                             }} 
                             required 
                         />

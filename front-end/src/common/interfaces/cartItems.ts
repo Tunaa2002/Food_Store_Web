@@ -4,4 +4,6 @@ export default interface CartItem {
     discount: number;
     image_url?: string;
     name?: string;
+    maxQuantity: number;
 }
+

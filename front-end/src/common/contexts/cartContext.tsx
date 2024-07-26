@@ -73,7 +73,6 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     let cart = JSON.parse(localStorage.getItem('cart') || '[]');
     let newQuantity = cart[index].quantity + delta;
   
-    // Kiểm tra giới hạn số lượng
     if (newQuantity >= 1 && newQuantity <= cart[index].maxQuantity) {
       cart[index].quantity = newQuantity;
     } else if (newQuantity < 1) {
@@ -86,7 +85,6 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     updateCartCount();
   };
   
-
   const syncCart = async () => {
     const token = localStorage.getItem('user');
     if (!token) return;
@@ -120,9 +118,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localCart.forEach(localItem => {
       const existingIndex = mergedCart.findIndex(item => item.product_id === localItem.product_id);
       if (existingIndex !== -1) {
-        // Nếu sản phẩm đã tồn tại trên server, chọn số lượng lớn nhất giữa local và server
         mergedCart[existingIndex].quantity = Math.max(mergedCart[existingIndex].quantity, localItem.quantity);
-        // Cập nhật maxQuantity từ localCart
         mergedCart[existingIndex].maxQuantity = localItem.maxQuantity;
       } else {
         mergedCart.push(localItem);
@@ -132,7 +128,6 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return mergedCart;
   };
   
-
   useEffect(() => {
     updateCartCount();
     syncCart();

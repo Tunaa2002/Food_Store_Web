@@ -75,13 +75,18 @@ class cartService {
         return new Promise(async (resolve, reject) => {
             const pool = ConnectionDB.getPool();
             const client = await pool.connect();
-
             const query = `
-                SELECT ci.*, p.name, p.discount, p.image_url, p.quantity as maxQuantity
+                SELECT ci.*, p.name, p.discount, p.image_url
                 FROM CartItems ci
                 JOIN Products p ON ci.product_id = p.product_id
                 WHERE ci.cart_id = $1;
             `;
+            // const query = `
+            //     SELECT ci.*, p.name, p.discount, p.image_url, p.quantity as maxQuantity
+            //     FROM CartItems ci
+            //     JOIN Products p ON ci.product_id = p.product_id
+            //     WHERE ci.cart_id = $1;
+            // `;
             const values = [cartId];
 
             try {
