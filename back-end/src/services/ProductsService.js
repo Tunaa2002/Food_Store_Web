@@ -9,7 +9,7 @@ class productsService {
                 const query = `
                     SELECT 
                         p.*, 
-                        ROUND(COALESCE(AVG(r.rating), 0), 1) AS rate_avg
+                        ROUND(COALESCE(AVG(r.rating), 0)::NUMERIC, 1) AS rate_avg
                     FROM Products p
                     LEFT JOIN Ratings r ON p.product_id = r.product_id
                     WHERE CAST(p.category_id AS VARCHAR) LIKE 'F%'
@@ -36,7 +36,7 @@ class productsService {
                 const query = `
                     SELECT 
                         p.*, 
-                        ROUND(COALESCE(AVG(r.rating), 0), 1) AS rate_avg
+                        ROUND(COALESCE(AVG(r.rating), 0)::NUMERIC, 1) AS rate_avg
                     FROM Products p
                     LEFT JOIN Ratings r ON p.product_id = r.product_id
                     WHERE CAST(p.category_id AS VARCHAR) LIKE 'D%'
@@ -63,7 +63,7 @@ class productsService {
                 const query = `
                     SELECT 
                         p.*, 
-                        ROUND(COALESCE(AVG(r.rating), 0), 1) AS rate_avg
+                        ROUND(COALESCE(AVG(r.rating), 0)::NUMERIC, 1) AS rate_avg
                     FROM Products p
                     LEFT JOIN Ratings r ON p.product_id = r.product_id
                     WHERE p.product_id = $1

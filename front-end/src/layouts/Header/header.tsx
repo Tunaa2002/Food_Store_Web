@@ -23,7 +23,7 @@ const Header: React.FC = () => {
                 const products = await getProducts();
                 const filtered = filterProductByName(products, searchText);
                 setFilteredProducts(filtered);
-                setShowModal(true);
+                setShowModal(filtered.length > 0);
             } else {
                 setFilteredProducts([]);
                 setShowModal(false);
@@ -141,7 +141,7 @@ const Header: React.FC = () => {
                 </div>
             </div>
 
-            {showModal && (
+            {showModal && filteredProducts.length > 0 && (
                 <div className={styles['search-modal']} onClick={handleCloseModal}>
                     <div className={styles['modal-content']} onClick={e => e.stopPropagation()}>
                         <span className={styles['modal-close']} onClick={handleCloseModal}>&times;</span>

@@ -42,7 +42,12 @@ class cartController {
                 cart = await CartService.createCart(userId);
             }
 
-            res.json(cart);
+            const cartItems = await CartService.getCartItemsByCartId(cart.cart_id);
+
+            res.json({
+                ...cart,
+                cartItems
+            });
         } catch (error) {
             console.error(error);
             res.status(500).json({ message: 'Internal server error' });
@@ -68,6 +73,7 @@ class cartController {
         }
     }
 }
+
 
 const CartController = new cartController();
 export default CartController;

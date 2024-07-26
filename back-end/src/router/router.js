@@ -32,7 +32,7 @@ router.put('/update-order/:order_id',VerifyAdmin, (req, res) => OrderController.
 router.get('/foods',(req, res) => ProductsController.getFoods(req, res));
 router.get('/drinks',(req, res) => ProductsController.getDrinks(req, res));
 router.get('/product-detail/:product_id', (req, res) => ProductsController.getProductDetail(req, res));
-
+router.get('/get-rating/:product_id', (req, res) => RatingController.getRating(req, res));
 
 router.get('/profile', AuthenToken, (req, res) => ProfileController.getProfile(req, res));
 router.put('/update-profile', AuthenToken, (req, res) => ProfileController.updateProfile(req, res));
@@ -44,6 +44,6 @@ router.post('/create-order', AuthenToken, (req, res) => OrderController.createOr
 router.post('/create-payment-url', AuthenToken, (req, res) => VNPAYController.createPaymentUrl(req, res));
 router.get('/payment-return', AuthenToken, (req, res) => VNPAYController.handlePaymentReturn(req, res));
 router.post('/create-rating', AuthenToken, (req, res) => RatingController.createRating(req, res));
-router.get('/get-rating/:product_id', AuthenToken, (req, res) => RatingController.getRating(req, res));
+
 
 export default router;

@@ -72,7 +72,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const updateItemQuantity = (index: number, delta: number) => {
     let cart = JSON.parse(localStorage.getItem('cart') || '[]');
     let newQuantity = cart[index].quantity + delta;
-
+  
     // Kiểm tra giới hạn số lượng
     if (newQuantity >= 1 && newQuantity <= cart[index].maxQuantity) {
       cart[index].quantity = newQuantity;
@@ -81,27 +81,28 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } else if (newQuantity > cart[index].maxQuantity) {
       cart[index].quantity = cart[index].maxQuantity;
     }
-
+  
     localStorage.setItem('cart', JSON.stringify(cart));
     updateCartCount();
   };
+  
 
   const syncCart = async () => {
     const token = localStorage.getItem('user');
     if (!token) return;
-
+  
     const { accessToken, expiry } = JSON.parse(token);
     if (new Date().getTime() >= expiry) {
       localStorage.removeItem('user');
       return;
     }
-
+  
     if (accessToken) {
       const localCartItems = JSON.parse(localStorage.getItem('cart') || '[]');
       try {
         await mergeCart(accessToken, localCartItems);
         const serverCart = await getCurrentCart(accessToken);
-
+  
         const mergedCart = mergeCartItems(localCartItems, serverCart.cartItems);
         localStorage.setItem('cart', JSON.stringify(mergedCart));
         setCartItems(mergedCart);
@@ -112,22 +113,25 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     }
   };
-
+  
   const mergeCartItems = (localCart: any[], serverCart: any[]) => {
     const mergedCart = [...serverCart];
-
+  
     localCart.forEach(localItem => {
       const existingIndex = mergedCart.findIndex(item => item.product_id === localItem.product_id);
       if (existingIndex !== -1) {
         // Nếu sản phẩm đã tồn tại trên server, chọn số lượng lớn nhất giữa local và server
         mergedCart[existingIndex].quantity = Math.max(mergedCart[existingIndex].quantity, localItem.quantity);
+        // Cập nhật maxQuantity từ localCart
+        mergedCart[existingIndex].maxQuantity = localItem.maxQuantity;
       } else {
         mergedCart.push(localItem);
       }
     });
-
+  
     return mergedCart;
   };
+  
 
   useEffect(() => {
     updateCartCount();

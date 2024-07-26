@@ -32,7 +32,11 @@ class ratingService {
                     WHERE product_id = $1;
                 `;
                 const result = await client.query(query, [product_id]);
-                resolve(result.rows);
+                const ratings = result.rows.map(row => ({
+                    ...row,
+                    rating: parseFloat(row.rating)
+                }));
+                resolve(ratings);
             } catch (err) {
                 reject(err);
             } finally {

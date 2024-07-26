@@ -7,6 +7,9 @@ import StarIcon from '@mui/icons-material/Star';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import { format } from 'date-fns';
+import RatingData from '@/common/interfaces/ratingData';
+import createRatingAPI from '@/app/api/user/rating/createRating';
+import getRatingAPI from '@/app/api/user/rating/getRating';
 
 const labels: { [index: string]: string } = {
   0: 'Awful',
@@ -26,27 +29,42 @@ function getLabelText(value: number) {
   return `${value} Star${value !== 1 ? 's' : ''}, ${labels[value]}`;
 }
 
-interface Review {
-  rating: number;
-  content: string;
-  created_at: string;
-}
-
-function UserRating() {
+const UserRating = ({ product_id, onReviewSubmitted }: { product_id: number, onReviewSubmitted: () => void }) => {
   const [value, setValue] = React.useState<number | null>(5);
   const [hover, setHover] = React.useState(-1);
   const [showInput, setShowInput] = React.useState(false);
   const [reviewContent, setReviewContent] = React.useState('');
-  const [reviews, setReviews] = React.useState<Review[]>([]);
+  const [reviews, setReviews] = React.useState<RatingData[]>([]);
+
+  const fetchRatings = async () => {
+    const fetchedReviews = await getRatingAPI(product_id);
+    setReviews(fetchedReviews);
+  };
+
+  React.useEffect(() => {
+    fetchRatings();
+  }, [product_id]);
+
+  const submitReview = async (newReview: RatingData) => {
+    try {
+      const response = await createRatingAPI(newReview);
+      response.data as RatingData;
+
+      await fetchRatings();
+      onReviewSubmitted();
+    } catch (error) {
+      console.error('Error submitting review:', error);
+    }
+  };
 
   const handleConfirmReview = () => {
     if (value !== null && reviewContent.trim() !== '') {
-      const newReview: Review = {
+      const newReview: RatingData = {
+        product_id,
         rating: value,
-        content: reviewContent,
-        created_at: format(new Date(), 'dd/MM/yyyy HH:mm')
+        comment: reviewContent,
       };
-      setReviews([...reviews, newReview]);
+      submitReview(newReview);
       setReviewContent('');
       setShowInput(false);
     }
@@ -98,19 +116,38 @@ function UserRating() {
           </Button>
         </Box>
       )}
-      <Box sx={{ mt: 2, width: '100%' }}>
-        {reviews.map((review, index) => (
-          <Box key={index} sx={{ mt: 2, p: 2, border: '1px solid #ddd', borderRadius: '4px', width: '100%' }}>
-            <Rating value={review.rating} readOnly precision={0.5} />
-            <Box sx={{ mt: 1, fontSize: '0.875em', color: 'gray' }}>
-              {review.created_at}
+      <Box sx={{ mt: 5, width: '100%', border: '1px solid #ccc', padding: 1, borderRadius: 3}}>
+        {reviews.length > 0 ? (
+          reviews.map((review, index) => (
+            <Box
+              key={review.created_at}
+              sx={{
+                mb: index === reviews.length - 1 ? 0 : 2,
+                borderBottom: index === reviews.length - 1 ? 'none' : '1px solid #ccc',
+                paddingBottom: 1,
+              }}
+            >
+              <Rating
+                name="read-only"
+                value={review.rating}
+                precision={0.5}
+                readOnly
+                size="small"
+              />
+              <Box sx={{ fontSize: '0.875rem', color: 'text.secondary' }}>
+                {review.created_at ? format(new Date(review.created_at), 'dd/MM/yyyy HH:mm') : 'N/A'}
+              </Box>
+              <Box component="span" sx={{ fontWeight: 'bold' }}>
+                {review.comment}
+              </Box>
             </Box>
-            <Box sx={{ mt: 1 }}>{review.content}</Box>
-          </Box>
-        ))}
+          ))
+        ) : (
+          <Box>Chưa có đánh giá nào</Box>
+        )}
       </Box>
     </Box>
   );
-}
+};
 
 export default UserRating;

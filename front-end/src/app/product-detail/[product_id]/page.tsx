@@ -1,34 +1,31 @@
-
-'use client'
+'use client';
 
 import styles from './productDetail.module.css';
 import { useEffect, useState } from 'react';
 import UserRating from '@/components/rating/rating';
-// import DefaultComponent from '@/components/comment/comment';
 import ProductProps from '@/common/interfaces/productProps';
 import { formatPrice } from '@/common/utils/formatPrice';
 import { useCart } from '@/common/contexts/cartContext';
 import getProductDetail from '@/app/api/user/products/getProductDetail';
 
-
 function ProductDetail() {
     const [product, setProduct] = useState<ProductProps | null>(null);
     const { addToCart } = useCart();
 
-    useEffect(() => {
-        const fetchProductDetail = async () => {
-            const storedProduct = localStorage.getItem('productDetail');
-            if (storedProduct) {
-                const parsedProduct = JSON.parse(storedProduct);
-                const productId = parsedProduct.product_id;
-                
-                if (productId) {
-                    const fetchedProduct = await getProductDetail(productId);
-                    setProduct(fetchedProduct);
-                }
+    const fetchProductDetail = async () => {
+        const storedProduct = localStorage.getItem('productDetail');
+        if (storedProduct) {
+            const parsedProduct = JSON.parse(storedProduct);
+            const productId = parsedProduct.product_id;
+            
+            if (productId) {
+                const fetchedProduct = await getProductDetail(productId);
+                setProduct(fetchedProduct);
             }
-        };
+        }
+    };
 
+    useEffect(() => {
         fetchProductDetail();
     }, []);
 
@@ -37,7 +34,6 @@ function ProductDetail() {
     }
 
     const renderStars = (rate: number | null | undefined) => {
-
         if (rate === null || rate === undefined) {
             return null;
         }
@@ -68,7 +64,7 @@ function ProductDetail() {
         addToCart(item);
     };
 
-    return(
+    return (
         <div className={styles['product-detail']}>
             <div className={styles['container']}>
                 <div className={styles['product']}>
@@ -98,9 +94,9 @@ function ProductDetail() {
                                 <div className={styles['star-icon']}>
                                     {renderStars(product.rate_avg || 0)}
                                 </div>
-                                <span className={styles['mr8']}>({product.rate_avg || 0})</span>
+                                <span className={styles['mr8']}>{product.rate_avg || 0}</span>
                                 <span className={styles['order-num']}>
-                                    Còn lại ({product.quantity})
+                                    Còn lại {product.quantity}
                                 </span>
                             </div>
                             <i className={`${styles['bi']} ${styles['bi-heart-fill']} bi-heart-fill`}></i>
@@ -110,11 +106,10 @@ function ProductDetail() {
                 </div>
                 <div className={styles['user-rating']}>
                     <h3 className={styles['title']}>Đánh giá sản phẩm</h3>
-                    <UserRating />
+                    {product.product_id !== undefined && (
+                        <UserRating product_id={product.product_id} onReviewSubmitted={fetchProductDetail} />
+                    )}
                 </div>
-                {/* <div className={styles['comments']}>
-                    <DefaultComponent />
-                </div> */}
             </div>
         </div>
     );

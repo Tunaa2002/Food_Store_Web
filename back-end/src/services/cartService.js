@@ -77,7 +77,7 @@ class cartService {
             const client = await pool.connect();
 
             const query = `
-                SELECT ci.*, p.name, p.discount, p.image_url, p.quantity
+                SELECT ci.*, p.name, p.discount, p.image_url, p.quantity as maxQuantity
                 FROM CartItems ci
                 JOIN Products p ON ci.product_id = p.product_id
                 WHERE ci.cart_id = $1;
