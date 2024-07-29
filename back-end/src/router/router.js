@@ -41,9 +41,9 @@ router.get('/current-cart', AuthenToken, (req, res) => CartController.getCurrent
 router.post('/merge-cart', AuthenToken, (req, res) => CartController.mergeCart(req, res));
 router.post('/remove-cart-item', AuthenToken, (req, res) => CartController.removeCartItem(req, res));
 router.post('/create-order', AuthenToken, (req, res) => OrderController.createOrder(req, res));
-router.post('/create-payment-url', AuthenToken, (req, res) => VNPAYController.createPaymentUrl(req, res));
-router.get('/payment-return', AuthenToken, (req, res) => VNPAYController.handlePaymentReturn(req, res));
-router.post('/create-rating', AuthenToken, (req, res) => RatingController.createRating(req, res));
+router.post('/create-rating', AuthenToken,(req, res) => RatingController.createRating(req, res));
+router.post('/create-payment-url', AuthenToken,(req, res) => VNPAYController.createPaymentUrl(req, res));
+router.get('/vnpay-return', AuthenToken, (req, res) => VNPAYController.verifyReturn(req, res));
 
 
 export default router;

@@ -1,50 +1,70 @@
-'use client'
+'use client';
 
 import styles from './order.module.css';
 import { useCart } from '@/common/contexts/cartContext';
 import { formatPrice } from '@/common/utils/formatPrice';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import createOrderAPI from '../api/user/order/createOrder';
+import createPaymentUrlAPI from '../api/user/order/createPaymentUrl';
 
 function Order() {
     const { cartItems, totalPrice, updateCartCount } = useCart();
     const [address, setAddress] = useState('');
     const [phone, setPhone] = useState('');
     const [paymentMethod, setPaymentMethod] = useState('cash');
-    const [cardNumber, setCardNumber] = useState('');
-    const [cardHolderName, setCardHolderName] = useState('');
-    const [cardExpiry, setCardExpiry] = useState('');
+    const [bankCode, setBankCode] = useState('NCB');
     const [error, setError] = useState('');
+    const [amount, setAmount] = useState(totalPrice); 
+    const [orderDescription, setOrderDescription] = useState(`Thanh toán đơn hàng thời gian: ${new Date().toLocaleString()}`);
+    const [orderType] = useState('billpayment');
+    const [language] = useState('vn');
+
+    useEffect(() => {
+        setAmount(totalPrice); // Cập nhật amount khi totalPrice thay đổi
+    }, [totalPrice]);
 
     const handleOrder = async () => {
-        if (!address || !phone || (paymentMethod === 'credit' && (!cardNumber || !cardHolderName || !cardExpiry))) {
+        setError(''); // Clear previous errors
+        if (!address || !phone) {
             setError('Vui lòng điền tất cả các trường bắt buộc!');
             return;
         }
-
-        const cardNumberPattern = /^\d{4}-\d{4}-\d{4}-\d{4}$/;
-        const cardExpiryPattern = /^(0[1-9]|1[0-2])\/\d{4}$/;
-        if (paymentMethod === 'credit' && (!cardNumberPattern.test(cardNumber) || !cardExpiryPattern.test(cardExpiry))) {
-            setError('Thông tin thẻ tín dụng không hợp lệ!');
+    
+        if (paymentMethod === 'vnpay' && (!orderDescription || !bankCode)) {
+            setError('Vui lòng điền đầy đủ thông tin thanh toán VNPAY!');
             return;
         }
-
-        const orderData  = {
+    
+        const orderData = {
             address,
             phone,
-            payment_id: paymentMethod === 'cash' ? 'cash' : 'credit',
+            payment_id: paymentMethod === 'cash' ? 'cash' : 'vnpay',
             cartItems,
             totalPrice,
+            orderDescription, // Include orderDescription
         };
-
+    
         try {
-            await createOrderAPI(orderData);
-
-            localStorage.removeItem('cart');
-            updateCartCount();
-
-            alert('Đặt hàng thành công!');
-            window.location.href = "/";
+            const orderResponse = await createOrderAPI(orderData); // Tạo đơn hàng trước
+    
+            if (paymentMethod === 'cash') {
+                // Xử lý thanh toán khi nhận hàng
+                localStorage.removeItem('cart');
+                updateCartCount();
+                alert('Đặt hàng thành công!');
+                window.location.href = "/";
+            } else if (paymentMethod === 'vnpay') {
+                // Xử lý thanh toán bằng VNPAY
+                const paymentData = {
+                    amount,
+                    orderDescription,
+                    orderType,
+                    bankCode,
+                    language
+                };
+                const { url } = await createPaymentUrlAPI(paymentData);
+                window.location.href = url; // Chuyển hướng người dùng đến URL thanh toán
+            }
         } catch (error) {
             setError('Đã xảy ra lỗi khi đặt hàng. Vui lòng thử lại sau.');
         }
@@ -57,7 +77,7 @@ function Order() {
                 {cartItems.length === 0 ? (
                     <p>Giỏ hàng của bạn hiện đang trống.</p>
                 ) : (
-                    cartItems.map((item: any, index: number) => (
+                    cartItems.map((item, index) => (
                         <div key={index} className={styles['cart-item']}>
                             <img src={item.image_url} alt={item.name} className={styles['img']} />
                             <h4>{item.name}</h4>
@@ -99,64 +119,40 @@ function Order() {
                     <label>
                         <input 
                             type="radio" 
-                            value="credit" 
-                            checked={paymentMethod === 'credit'} 
-                            onChange={() => setPaymentMethod('credit')} 
+                            value="vnpay" 
+                            checked={paymentMethod === 'vnpay'} 
+                            onChange={() => setPaymentMethod('vnpay')} 
                         />
-                        Thanh toán tín dụng
+                        Thanh toán qua VNPAY
                     </label>
                 </div>
 
-                {paymentMethod === 'credit' && (
+                {paymentMethod === 'vnpay' && (
                     <div>
-                        <label>Số thẻ</label>
+                        <h3>Thông tin thanh toán VNPAY</h3>
+                        <p>Tổng tiền đơn hàng: {formatPrice(amount)} VNĐ</p>
                         <input 
                             type="text" 
-                            placeholder="xxxx-xxxx-xxxx-xxxx" 
-                            value={cardNumber} 
-                            onChange={(e) => {
-                                const value = e.target.value.replace(/\D/g, '').slice(0, 16);
-                                const formattedValue = value.match(/.{1,4}/g)?.join('-') || '';
-                                setCardNumber(formattedValue);
-                            }} 
-                            required 
+                            placeholder="Mô tả đơn hàng" 
+                            value={orderDescription} 
+                            onChange={(e) => setOrderDescription(e.target.value)} 
                         />
-                        <label>Tên chủ thẻ</label>
-                        <input 
-                            type="text" 
-                            placeholder="Tên chủ thẻ" 
-                            value={cardHolderName} 
-                            onChange={(e) => {
-                                const value = e.target.value
-                                    .replace(/[^A-Za-z\s]/g, '')
-                                    .replace(/\s+/g, ' ')
-                                    .toUpperCase()
-                                setCardHolderName(value);
-                            }} 
-                            required 
-                        />
-                        <label>Ngày phát hành (DD/MM)</label>
-                        <input 
-                            type="text" 
-                            placeholder="DD/MM" 
-                            value={cardExpiry} 
-                            onChange={(e) => {
-                                const value = e.target.value.replace(/\D/g, '');
-                                let formattedValue = '';
-                                if (value.length <= 2) {
-                                    formattedValue = value;
-                                } else {
-                                    formattedValue = `${value.slice(0, 2)}/${value.slice(2, 4)}`;
-                                }
-                                setCardExpiry(formattedValue);
-                            }} 
-                            required 
-                        />
+                        <select value={bankCode} onChange={(e) => setBankCode(e.target.value)}>
+                            <option value="NCB">NCB</option>
+                            <option value="VISA">VISA</option>
+                        </select>
+                        <select value={language} disabled>
+                            <option value="vn">Tiếng Việt</option>
+                        </select>
+                        <button onClick={handleOrder} className={styles['order-btn']}>Thanh toán</button>
                     </div>
                 )}
 
                 {error && <p className={styles['error']}>{error}</p>}
-                <button onClick={handleOrder} className={styles['order-btn']}>Đặt hàng</button>
+
+                {paymentMethod === 'cash' && (
+                    <button onClick={handleOrder} className={styles['order-btn']}>Đặt hàng</button>
+                )}
             </div>
         </div>
     );
