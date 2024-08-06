@@ -2,7 +2,7 @@ import { format } from 'date-fns-tz';
 import VNPAYService from "../services/vnpayService.js";
 
 class vnpayController {
-    createPaymentUrl(req, res) {
+    async createPaymentUrl(req, res) {
         const ipAddr = req.headers['x-forwarded-for'] ||
             req.connection.remoteAddress ||
             req.socket.remoteAddress ||
@@ -11,40 +11,29 @@ class vnpayController {
         const { amount, bankCode, orderDescription, orderType, language } = req.body;
 
         try {
-            const timeZone = 'Asia/Ho_Chi_Minh'; // Múi giờ +7
+            const timeZone = 'Asia/Ho_Chi_Minh';
             const currentTime = new Date();
             const formattedTime = format(currentTime, 'yyyyMMddHHmmss', { timeZone });
 
             const extendedOrderDescription = `${orderDescription} thời gian: ${formattedTime}`;
 
-            const paymentUrl = VNPAYService.createPaymentUrl(extendedOrderDescription, amount, ipAddr, bankCode, orderType, language);
+            const paymentUrl = await VNPAYService.createPaymentUrl(extendedOrderDescription, amount, ipAddr, bankCode, orderType, language);
             res.json({ url: paymentUrl });
         } catch (error) {
             console.error('Error in createPaymentUrl:', error);
             res.status(500).send('An error occurred while creating the payment URL.');
         }
     }
-    async verifyReturn(vnp_Params) {
-        let secureHash = vnp_Params['vnp_SecureHash'];
 
-        delete vnp_Params['vnp_SecureHash'];
-        delete vnp_Params['vnp_SecureHashType'];
-
-        const sortedParams = this.sortObject(vnp_Params);
-
-        const signData = querystring.stringify(sortedParams, { encode: false });
-        const hmac = crypto.createHmac('sha512', config.vnp_HashSecret);
-        const signed = hmac.update(Buffer.from(signData, 'utf-8')).digest('hex');
-
-        if (secureHash === signed) {
-            const orderId = vnp_Params['vnp_TxnRef'];
-            await ConnectionDB.query(
-                'UPDATE `order` SET state = ? WHERE order_id = ?',
-                ['banked', orderId.toString()]
-            );
-            return vnp_Params['vnp_ResponseCode'];
-        } else {
-            return '97';
+    async vnpayReturn(req, res) {
+        const vnp_Params = req.query;
+        
+        try {
+            const isSuccess = await VNPAYService.vnpayReturn(vnp_Params);
+            res.json({ status: isSuccess }); // Trả về true hoặc false
+        } catch (error) {
+            console.error('Error in vnpayReturn:', error);
+            res.status(500).json({ status: false, message: 'An error occurred during the payment return process.' });
         }
     }
 }

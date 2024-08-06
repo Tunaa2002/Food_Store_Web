@@ -113,16 +113,24 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
   
   const mergeCartItems = (localCart: any[], serverCart: any[]) => {
-    const mergedCart = [...serverCart];
+    const mergedCart: any[] = [];
+    const map = new Map();
+    serverCart.forEach((serverItem) => {
+      map.set(serverItem.product_id, { ...serverItem });
+    });
   
-    localCart.forEach(localItem => {
-      const existingIndex = mergedCart.findIndex(item => item.product_id === localItem.product_id);
-      if (existingIndex !== -1) {
-        mergedCart[existingIndex].quantity = Math.max(mergedCart[existingIndex].quantity, localItem.quantity);
-        mergedCart[existingIndex].maxQuantity = localItem.maxQuantity;
+    localCart.forEach((localItem) => {
+      if (map.has(localItem.product_id)) {
+        const existingItem = map.get(localItem.product_id);
+        existingItem.quantity = Math.max(existingItem.quantity, localItem.quantity);
+        existingItem.maxQuantity = localItem.maxQuantity;
       } else {
-        mergedCart.push(localItem);
+        map.set(localItem.product_id, { ...localItem });
       }
+    });
+  
+    map.forEach((value) => {
+      mergedCart.push(value);
     });
   
     return mergedCart;

@@ -43,7 +43,7 @@ router.post('/remove-cart-item', AuthenToken, (req, res) => CartController.remov
 router.post('/create-order', AuthenToken, (req, res) => OrderController.createOrder(req, res));
 router.post('/create-rating', AuthenToken,(req, res) => RatingController.createRating(req, res));
 router.post('/create-payment-url', AuthenToken,(req, res) => VNPAYController.createPaymentUrl(req, res));
-router.get('/vnpay-return', AuthenToken, (req, res) => VNPAYController.verifyReturn(req, res));
+router.get('/vnpay-return', AuthenToken, (req, res) => VNPAYController.vnpayReturn(req, res));
 
 
 export default router;

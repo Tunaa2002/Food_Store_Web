@@ -2,19 +2,19 @@ import querystring from 'qs';
 import crypto from 'crypto';
 import { format } from 'date-fns-tz';
 import config from '../config/vnpayConfig.json' assert { type: 'json' };
-import ConnectionDB from '../config/connectionDB';
+import ConnectionDB from '../config/connectionDB.js';
 
 class vnpayService {
-    async createPaymentUrl(orderInfo, amount, ipAddr, bankCode, orderType, locale) {
+    createPaymentUrl(orderInfo, amount, ipAddr, bankCode, orderType, locale) {
         const tmnCode = config.vnp_TmnCode;
         const secretKey = config.vnp_HashSecret;
         const vnpUrl = config.vnp_Url;
         const returnUrl = config.vnp_ReturnUrl;
 
-        const timeZone = 'Asia/Ho_Chi_Minh'; // Múi giờ +7
+        const timeZone = 'Asia/Ho_Chi_Minh'; 
         const date = new Date();
         const createDate = format(date, 'yyyyMMddHHmmss', { timeZone });
-        const expireDate = format(new Date(date.getTime() + 15 * 60 * 1000), 'yyyyMMddHHmmss', { timeZone }); // Thêm 15 phút
+        const expireDate = format(new Date(date.getTime() + 15 * 60 * 1000), 'yyyyMMddHHmmss', { timeZone });
         const orderId = format(date, 'HHmmss', { timeZone });
 
         if (!locale) {
@@ -42,10 +42,8 @@ class vnpayService {
             vnp_Params['vnp_BankCode'] = bankCode;
         }
 
-        // Sắp xếp các tham số theo thứ tự chữ cái
         const sortedParams = this.sortObject(vnp_Params);
 
-        // Tạo dữ liệu chữ ký
         const signData = querystring.stringify(sortedParams, { encode: false });
         const hmac = crypto.createHmac('sha512', secretKey);
         const signed = hmac.update(Buffer.from(signData, 'utf-8')).digest('hex');
@@ -54,23 +52,23 @@ class vnpayService {
         return vnpUrl + '?' + querystring.stringify(sortedParams, { encode: false });
     }
 
-    async sortObject(obj) {
+    sortObject(obj) {
         let sorted = {};
         let str = [];
         let key;
         for (key in obj) {
-          if (obj.hasOwnProperty(key)) {
-            str.push(encodeURIComponent(key));
-          }
+            if (obj.hasOwnProperty(key)) {
+                str.push(encodeURIComponent(key));
+            }
         }
         str.sort();
         for (key = 0; key < str.length; key++) {
-          sorted[str[key]] = encodeURIComponent(obj[str[key]]).replace(/%20/g, "+");
+            sorted[str[key]] = encodeURIComponent(obj[str[key]]).replace(/%20/g, "+");
         }
         return sorted;
     }
 
-    async verifyReturn(vnp_Params) {
+    async vnpayReturn(vnp_Params) {
         let secureHash = vnp_Params['vnp_SecureHash'];
 
         delete vnp_Params['vnp_SecureHash'];
@@ -83,14 +81,14 @@ class vnpayService {
         const signed = hmac.update(Buffer.from(signData, 'utf-8')).digest('hex');
 
         if (secureHash === signed) {
-            const orderId = vnp_Params['vnp_TxnRef'];
-            await ConnectionDB.query(
-                'UPDATE `orders` SET state = "spending" WHERE order_id = ?',
-                ['banked', orderId.toString()]
-            );
-            return vnp_Params['vnp_ResponseCode'];
+            // const orderId = vnp_Params['vnp_TxnRef'];
+            // await ConnectionDB.query(
+            //     'UPDATE `Orders` SET state = "spending" WHERE order_id = ?',
+            //     ['banked', orderId.toString()]
+            // );
+            return true; // Thành công
         } else {
-            return '97';
+            return false; // Thất bại
         }
     }
 }
